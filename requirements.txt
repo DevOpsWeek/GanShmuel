@@ -1,9 +1,0 @@
-Flask==1.1.2
-Flask-Migrate==2.5.3
-Flask-Script==2.0.6
-Flask-Cors==3.0.9
-requests==2.25.0
-mysqlclient==2.0.1
-pika==1.1.0
-pymysql==1.0.2
-flask-mysql==1.5.2
