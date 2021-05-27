@@ -1,39 +1,28 @@
 import pymysql
+import pymysql.cursors
 from flask import Flask,render_template, request
-from flaskext.mysql import MySQL
+#from flaskext.mysql import MySQL
 
 
 app = Flask(__name__)
-mysql = MySQL(app)
-mysql.init_app(app)
+conn = pymysql.connect(host='localhost',
+                             user='billdb',
+                             password='billdb123',
+                             database='billdb',
+                             cursorclass=pymysql.cursors.DictCursor)
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'flask'
-app.config['MYSQL_CURSORCLASS'] = 'dictCursor'
+cur = conn.cursor()
 
-
-#Creating a connection cursorclear
- 
-#Executing SQL Statements
-#cursor.execute(''' CREATE TABLE table_name(field1, field2...) ''')
-#cursor.execute(''' INSERT INTO table_name VALUES(v1,v2...) ''')
-#cursor.execute(''' DELETE FROM table_name WHERE condition ''')
- 
-#Saving the Actions performed on the DB
-#mysql.connection.commit()
- 
-#Closing the cursor
-#cursor.close()
-
-@app.route("/", methods=['GET'])
+@app.route("/")
 def index():
-    return render_template('index.html')
-
-@app.route("/health")
+    return render_template("index.html")
+    
+@app.route("/health", methods=['GET'])
 def getHealth():
-    return "server health"
+    cur.execute("select 1")
+    output = cur.fetchall()
+    return output
+
 
 @app.route("/provider", methods=["POST"])
 def postProvider():
@@ -73,3 +62,5 @@ def getBill():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
+    mysqlconnect()
+
