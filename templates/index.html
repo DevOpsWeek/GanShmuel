@@ -1,12 +1,22 @@
+
+<head>
+    <meta charset="utf-8">
+    <title>
+    {% block head %}{% endblock head %}
 {% extends 'base.html' %}
 
+    {% render_block "css" %}
+    {% render_block "js" %}
 
+    {% block styles %}{% endblock styles %}
+    {% block scripts %}{% endblock scripts %}
 {% block head %} 
 
 {% endblock %}
 
-{% block body %}
-
+</title>
+</head>
+<body>
 <div class="content">
     <h1>Hello World!</h1>
     <h1>Task Master</h1>
@@ -28,4 +38,5 @@
         </tr>
     </table>
 </div>
-{% endblock %}
+</body>
+</html>
