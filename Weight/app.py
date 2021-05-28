@@ -5,11 +5,10 @@ from flask import Flask, render_template
 # from sqlalchemy import inspect
 # from sqlalchemy.sql import text
 # import os
+import logging
 
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-
-
 
 app = Flask(__name__)
 
@@ -21,10 +20,24 @@ now = datetime.now()  # current date and time
 date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
 
 
-@app.route("/", methods=["GET"])
+@app.route("/item/<id>?from=t1&to=t2", methods=["GET"])
 def index():
-    # db.engine.execute('mysql -V')
     return "This time is: " + date_time
+
+
+@app.route("/batch-weight.html", methods=["POST", "GET"])
+def index2():
+    return render_template("batch-weight.html")
+
+
+@app.route("/index.html", methods=["POST", "GET"])
+def index3():
+    return render_template("index.html")
+
+
+@app.route("/", methods=["GET"])
+def index4():
+    return render_template("index.html")
 
 
 @app.route("/health", methods=["GET"])
@@ -36,5 +49,10 @@ def health():
         return '<h1>Status Code: 500.</h1>'
 
 
+@app.route("/unknown.html", methods=["POST", "GET"])
+def index5():
+    return render_template("unknown.html")
+
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="127.0.0.1")
