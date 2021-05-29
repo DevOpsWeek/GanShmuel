@@ -5,25 +5,13 @@ import json
 
 app = Flask(__name__)
 
-
-# def trucks() -> List[Dict]:
-#     connection = config_db()
-#     cursor = connection.cursor()
-#     cursor.execute('SELECT * FROM Trucks')
-#     results = [{id: provider_id} for (id, provider_id) in cursor]
-#     cursor.close()
-#     connection.close()
-#     return results
-
-
-# def providers() -> List[Dict]:
-#     connection=config_db()
-#     cursor = connection.cursor()
-#     cursor.execute('SELECT * FROM Providers')
-#     results = [{id: name} for (id, name) in cursor]
-#     cursor.close()
-#     connection.close()
-#     return results
+	# GET /health	
+	# POST /provider	
+	# POST /rates	
+	# GET /rates	
+	# POST /truck	
+	# PUT /truck	
+	# GET /bill	
 
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
@@ -39,7 +27,7 @@ def getHealth():
      return "500"
     return "200"
 
-@app.route('/providers', methods=['GET'])
+@app.route('/providers')
 def postProvider():
    pass
 
@@ -48,16 +36,13 @@ def getRate():
     pass
 
 
-@app.route("/getTrucks", methods=["GET"])
-def getTrucks() ->List[Dict]:
-    cursor=cnx.cursor()
-    cursor.execute('Select * from Trucks')
-    results = [{id: name} for (id, name) in cursor]
-    cursor.close()
-    return json.dumps({'trucks':results})
+@app.route("/postTruck", methods=['POST'])
+def getTrucks():
+    pass
 
 
-# @app.route("/truck", methods=["PUT"])
+
+# @app.route("/putTruck", methods=["PUT"])
 # def putTruck():
 #     return "truck"
 
