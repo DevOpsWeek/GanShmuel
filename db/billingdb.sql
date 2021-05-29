@@ -11,7 +11,7 @@ USE `billdb`;
 -- Table structure
 --
 
-CREATE TABLE IF NOT EXISTS `Provider` (
+CREATE TABLE IF NOT EXISTS `Providers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS `Trucks` (
   FOREIGN KEY (`provider_id`) REFERENCES `Provider`(`id`)
 ) ENGINE=MyISAM ;
 
---
+
 -- Dumping data
---
---  INSERT INTO Provider (`id`,`name`) VALUES ('ALL'),('pro1'),
--- (3, 'pro2');
+
+INSERT INTO Providers (`id`,`name`) VALUES (1 ,'pro1'),
+(2, 'pro2');
 
 INSERT INTO Rates (`product_id`, `rate`, `scope`) VALUES ('1', 2, 'ALL'),
 (2, 4, 'pro1');

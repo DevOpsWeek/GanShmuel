@@ -29,6 +29,17 @@ def trucks() -> List[Dict]:
     connection.close()
     return results
 
+def providers() -> List[Dict]:
+
+    connection=conn_db()
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM Providers')
+    results = [{id: provider_id} for (id, provider_id) in cursor]
+    cursor.close()
+    connection.close()
+    return results
+
+
 def health():
     connection = conn_db()
     cursor = connection.cursor()
@@ -51,14 +62,14 @@ def getTrucks() -> str:
 def getHealth()->str:
     return json.dumps(health())
 
-@app.route("/provider", methods=["POST"])
+@app.route("/providers", methods=["GET"])
 def postProvider():
-    return "provider"
+    return json.dumps({'providers': providers()})
 
 
-@app.route('/form')
-def form():
-    return 'imagine this is a form'
+# @app.route('/form')
+# def form():
+#     return 'imagine this is a form'
 
 @app.route("/rates", methods=["GET", "POST"])
 def getPOSTRates():
