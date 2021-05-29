@@ -1,9 +1,10 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, redirect
 import logging
 from datetime import datetime
 from flaskext.mysql import MySQL
 import pandas
 import os
+import json
 
 
 app = Flask(__name__)
@@ -13,7 +14,7 @@ app.config['MYSQL_PORT'] = '3306'
 # run "sudo docker inspect mysql_cont" to find your host address for testing (Boris showed me)
 # the second bit increments by 1 every time you run docker compse
 # (for example: 172.14.0.2 will become 172.15.0.2 next time you compose) -V. Churikov
-app.config['MYSQL_DATABASE_HOST'] = '172.18.0.2'
+app.config['MYSQL_DATABASE_HOST'] = '172.23.0.2'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '0000'
 app.config['MYSQL_DATABASE_DB'] = 'weight'
@@ -49,6 +50,7 @@ def parse(filePath):
     if filePath.endswith('.json'):
         print("Parsing from current directory: " + os.getcwd()) #debug print
         print("Expected file path:" + filePath) #debug print
+        print("")
         jsonData = pandas.read_json(filePath) ####### json not yet functional. breaks on this line -V. Churikov
         jsonData.to_csv(tempfilePath)
         filePath = tempfilePath
@@ -83,9 +85,7 @@ def parse(filePath):
         if os.path.exists(tempfilePath):
             os.remove(tempfilePath)
 
-#parse(os.path.join(os.getcwd() + '/Samples/containers2.csv'))
-
-@app.route("/item/<id>?from=t1&to=t2", methods=["GET"])
+@app.route("/db", methods=["GET"]) #SHOWS DATABASE
 def index():
     cursor.execute('''select * from containers_registered''')
     return jsonify(cursor.fetchall())
@@ -95,27 +95,28 @@ def index():
 @app.route("/batch-weight.html", methods=["POST","GET"])
 def index2():
     if request.method == 'POST':
-        if 'file' not in request.files:
+        print(request.files)
+        if 'csvfile' not in request.files and 'jsonfile' not in request.files:
             return "Error(1): no file selected. Please go back and select a file to upload."
-        file = request.files['file']
+        if 'csvfile' in request.files:
+            file = request.files['csvfile']
+        else:
+            file = request.files['jsonfile']
         print("USING FILE:", file) #debug
         if file.filename == '':
             return "Error (2): no file selected. Please go back and select a file to upload."
         if file == file: #testing, maybe remove
-            newfile = os.path.join('./Samples/', request.files['file'].filename)
+            newfile = os.path.join('./Samples/', file.filename)
             file.save(newfile)
             print("Parsing ", newfile) #debug
             parse(newfile)
-    #parse(os.path.join(os.getcwd() + '/Samples/containers2.csv'))
+            return redirect("/db")
     return render_template("batch-weight.html")
 
 
 @app.route("/index.html", methods=["POST", "GET"])
 def index3():
     return render_template("index.html")
-
-
-
 
 @app.route("/unknown.html", methods=["POST", "GET"])
 def index5():
