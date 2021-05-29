@@ -14,11 +14,11 @@ services:
 #        window: default
     environment:
       MYSQL_ROOT_PASSWORD: "0000"
-      MYSQL_DATABASE: "d_b"
+      MYSQL_DATABASE: "weight"
     ports:
       - 127.0.0.2:4000:3306
     volumes:
-    - ./db-weight.sql:/docker-entrypoint-initdb.d/db.sql
+    - ./create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
 
 
 
