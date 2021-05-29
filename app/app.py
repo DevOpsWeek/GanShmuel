@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict
 from flask import Flask,request,render_template
 import mysql.connector
@@ -16,7 +17,7 @@ def conn_db():
         'port': '3306',
         'database': 'billdb'
     }
-    connection = mysql.connector.connect(**config)
+    connection=mysql.connector.connect(**config)   
     return connection
 
 def trucks() -> List[Dict]:
@@ -33,10 +34,14 @@ def health():
     connection = conn_db()
     cursor = connection.cursor()
     cursor.execute('SELECT 1')
-    results = cursor.fetchall()
+    results = str(cursor.fetchall())
     cursor.close()
     connection.close()
-    return results
+    string_to_test = str(results)
+    char_to_check = ["1"]
+    for char in char_to_check:
+        if char in string_to_test:
+            return "Database is healthy, keep up the good work :)"
 
 def providers() -> List[Dict]:
     connection=conn_db()
@@ -63,7 +68,7 @@ def postProvider():
 # @app.route("/rates", methods=["GET", "POST"])
 # def getPOSTRates():
 #     if request.method == 'GET':
-#         return "Showig rates"
+#         return "Showing rates"
     
 #     if request.method == 'POST':
 #         product_id = request.form['product_id']
@@ -84,10 +89,10 @@ def getTrucks() -> str:
 # def putTruck():
 #     return "truck"
 
-@app.route("/bill", methods=["GET"])
-def getBill():
-    return render_template('bill.html')
+# @app.route("/bill", methods=["GET"])
+# def getBill():
+#     return render_template('bill.html')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',debug=True)
