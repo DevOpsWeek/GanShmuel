@@ -1,4 +1,4 @@
-import pymysql
+import pymysql, requests
 from flask import Flask,render_template, request
 from flaskext.mysql import MySQL
 
@@ -31,9 +31,12 @@ app.config['MYSQL_CURSORCLASS'] = 'dictCursor'
 def index():
     return render_template('index.html')
 
-@app.route("/health")
+@app.route("/health", methods=['GET'])
 def getHealth():
-    return "server health"
+    site = requests.get('http://172.17.0.2:5000/') #ip is using mine (alon) change when used on your pc!!!!
+    print(site)
+    site = str(site.status_code)
+    return site
 
 @app.route("/provider", methods=["POST"])
 def postProvider():
@@ -42,7 +45,7 @@ def postProvider():
 
 @app.route('/form')
 def form():
-    return render_template('form.html')
+    return 'imagine this is a form'
 
 @app.route("/rates", methods=["GET", "POST"])
 def getPOSTRates():
@@ -69,7 +72,7 @@ def putTruck():
 
 @app.route("/bill", methods=["GET"])
 def getBill():
-    return "bill"
+    return render_template('bill.html')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
