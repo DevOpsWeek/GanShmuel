@@ -1,12 +1,17 @@
-version: '3.8'
+version: "2"
 services:
-    backend:
-    build:
-        context: .
-        dockerfile: Dockerfile
+  app:
+    build: ./app
+    links:
+      - db
     ports:
-       - 8000:8000
+      - "5000:5000"
+
+  db:
+    image: mysql:5.7
+    ports:
+      - "32000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
     volumes:
-        -.:/app
-    depends_on: 
-        - db
+      - ./db:/docker-entrypoint-initdb.d/:ro
