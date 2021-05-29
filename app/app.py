@@ -4,7 +4,7 @@ from flask import Flask,request,render_template
 import mysql.connector
 import json
 
-from mysql.connector import connection
+from mysql.connector import connect, connection
 
 app = Flask(__name__)
 
@@ -17,7 +17,7 @@ def conn_db():
         'port': '3306',
         'database': 'billdb'
     }
-    connection=mysql.connector.connect(**config)   
+    connection=mysql.connector.connect(**config)  
     return connection
 
 def trucks() -> List[Dict]:
