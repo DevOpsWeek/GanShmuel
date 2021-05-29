@@ -19,7 +19,7 @@ def run_docker(branch_name):
 @app.route('/webhook', methods=['POST'])
 def webhook():
     json_str=request.json
-    current_branch=list(dict_str['ref'].split("/"))
+    current_branch=list(json_str['ref'].split("/"))
     print(current_branch)
     fun_result=run_docker(current_branch)
     return fun_result
