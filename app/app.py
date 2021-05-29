@@ -55,60 +55,61 @@ def health():
     return "Database is down, please contact the devs"
 
 
-    # char='1'
-    # for char in results:
-    #     if char in results:
-    #         return "Database is healthy, keep up the good work :)"
-    # return "Database is down, please contact the devs"
+def providers() -> List[Dict]:
+    connection=conn_db()
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM Providers')
+    results = [{id: name} for (id, name) in cursor]
+    cursor.close()
+    connection.close()
+    return results
 
-@app.route('/')
+
+@app.route('/',methods=['GET'])
 def index():
-     return render_template('index.html')
+    return render_template('index.html')
 
-@app.route('/trucks')
-def getTrucks() -> str:
-    return json.dumps({'trucks': trucks()})
-
-@app.route('/health')
-def getHealth()->str:
+@app.route('/health',methods=['GET'])
+def getHealth():
     return json.dumps(health())
+
 
 @app.route("/providers", methods=["GET"])
 def postProvider():
     return json.dumps({'providers': providers()})
 
 
-# @app.route('/form')
-# def form():
-#     return 'imagine this is a form'
+@app.route('/providers', methods=['GET'])
+def postProvider():
+    return json.dumps({'providers':providers()})
 
-@app.route("/rates", methods=["GET", "POST"])
-def getPOSTRates():
-    if request.method == 'GET':
-        return "Showig rates"
+# @app.route("/rates", methods=["GET", "POST"])
+# def getPOSTRates():
+#     if request.method == 'GET':
+#         return "Showig rates"
     
-    if request.method == 'POST':
-        product_id = request.form['product_id']
-        rate = request.form['rate']
-        scope = request.form['scope']
-        cursor = mysql.get_db().cursor()
-        cursor.execute(''' INSERT INTO rates_table VALUES(%s,%s)''',(product_id,rate,scope))
-        mysql.get_db.commit()
-        cursor.close()
-        return f"Done!!"
+#     if request.method == 'POST':
+#         product_id = request.form['product_id']
+#         rate = request.form['rate']
+#         scope = request.form['scope']
+#         cursor = mysql.get_db().cursor()
+#         cursor.execute(''' INSERT INTO rates_table VALUES(%s,%s)''',(product_id,rate,scope))
+#         mysql.get_db.commit()
+#         cursor.close()
+#         return f"Done!!"
 
-@app.route("/truck", methods=["POST"])
-def postTruck():
-    return "truck"
+@app.route("/getTrucks", methods=["GET"])
+def getTrucks() -> str:
+    return json.dumps({'trucks': trucks()})
 
-@app.route("/truck", methods=["PUT"])
-def putTruck():
-    return "truck"
+
+# @app.route("/truck", methods=["PUT"])
+# def putTruck():
+#     return "truck"
 
 @app.route("/bill", methods=["GET"])
 def getBill():
     return render_template('bill.html')
-
 
 
 if __name__ == '__main__':
