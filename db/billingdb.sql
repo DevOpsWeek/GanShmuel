@@ -34,9 +34,7 @@ CREATE TABLE IF NOT EXISTS `Trucks` (
 --
 -- Dumping data
 --
-
-
-INSERT INTO Provider (`name`) VALUES ('ALL'), ('pro1'),
+INSERT INTO Provider (`id`,`name`) VALUES ('ALL'), ('pro1'),
 (3, 'pro2');
 
 INSERT INTO Rates (`product_id`, `rate`, `scope`) VALUES ('1', 2, 'ALL'),
