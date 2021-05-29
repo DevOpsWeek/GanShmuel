@@ -47,8 +47,19 @@ def health():
     results = cursor.fetchall()
     cursor.close()
     connection.close()
+    string_to_test = str(results)
+    chars_to_check = ["1"]
+    for char in chars_to_check:
+        if char in string_to_test:
+            return "Database is healthy, keep up the good work :)"
+    return "Database is down, please contact the devs"
 
-    return results
+
+    # char='1'
+    # for char in results:
+    #     if char in results:
+    #         return "Database is healthy, keep up the good work :)"
+    # return "Database is down, please contact the devs"
 
 @app.route('/')
 def index():
