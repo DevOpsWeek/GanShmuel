@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
-        os.system(command_list[i])
+        os.system(i)
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
