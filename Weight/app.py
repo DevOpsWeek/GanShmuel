@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, request
 from datetime import datetime
 from flaskext.mysql import MySQL
 import pandas
@@ -12,7 +12,7 @@ app.config['MYSQL_PORT'] = '3306'
 # run "sudo docker inspect mysql_cont" to find your host address for testing (Boris showed me)
 # the second bit increments by 1 every time you run docker compose
 # (for example: 172.14.0.2 will become 172.15.0.2 next time you compose) -V. Churikov
-app.config['MYSQL_DATABASE_HOST'] = '172.18.0.2'
+app.config['MYSQL_DATABASE_HOST'] = '172.21.0.2'
 
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '0000'
@@ -69,7 +69,7 @@ def parse(filePath):
             os.remove(tempfilePath)
 
 # We will call this function from a front-end interface to import CSV tables into our database -V. Churikov
-parse(os.path.join(os.getcwd() + '/Samples/containers2.csv'))
+#parse(os.path.join(os.getcwd() + '/Samples/containers2.csv'))
 
 @app.route("/item/<id>?from=t1&to=t2", methods=["GET"])
 def index():
@@ -80,6 +80,18 @@ def index():
 
 @app.route("/batch-weight.html", methods=["POST","GET"])
 def index2():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return "Error(1): no file selected. Please go back and select a file to upload."
+        file = request.files['file']
+        print("USING FILE:", file) #debug
+        if file.filename == '':
+            return "Error (2): no file selected. Please go back and select a file to upload."
+        if file == file: #testing, maybe remove
+            newfile = os.path.join('./Samples/', request.files['file'].filename)
+            file.save(newfile)
+            print("Parsing ", newfile) #debug
+            parse(newfile)
     return render_template("batch-weight.html")
 
 @app.route("/index.html", methods=["POST","GET"])
@@ -99,5 +111,5 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1")
+    app.run(debug=True)
 
