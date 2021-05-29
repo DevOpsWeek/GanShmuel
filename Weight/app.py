@@ -71,12 +71,23 @@ def parse(filePath):
 # We will call this function from a front-end interface to import CSV tables into our database -V. Churikov
 parse(os.path.join(os.getcwd() + '/Samples/containers2.csv'))
 
-@app.route("/", methods=["GET"])
+@app.route("/item/<id>?from=t1&to=t2", methods=["GET"])
 def index():
     cursor.execute('''select * from containers_registered''')
     return jsonify(cursor.fetchall())
     #return "This time is: " + date_time -- displays the time
 
+
+@app.route("/batch-weight.html", methods=["POST","GET"])
+def index2():
+    return render_template("batch-weight.html")
+
+@app.route("/index.html", methods=["POST","GET"])
+def index3():
+    return render_template("index.html")
+@app.route("/", methods=["GET"])
+def index4():
+    return render_template("index.html")
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -88,4 +99,5 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="127.0.0.1")
+
