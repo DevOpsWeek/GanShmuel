@@ -1,5 +1,5 @@
 from typing import List, Dict
-from flask import Flask,request,render_template
+from flask import Flask,request,render_template,redirect,url_for
 import mysql.connector
 import json
 
@@ -20,7 +20,7 @@ cursor=cnx.cursor()
 
 @app.route('/',methods=['GET'])
 def index():
-    return render_template('index.html')
+    return render_template('base.html')
 
 @app.route('/health',methods=['GET'])
 def getHealth():
@@ -28,11 +28,11 @@ def getHealth():
      return "500"
     return "200"
 
-# @app.route('/providers',methods=['POST'])
+# @app.route('/postproviders',methods=['POST'])
 # def postProvider():
 #    pass
 
-# @app.route('/providers',methods=['PUT'])
+# @app.route('/putproviders',methods=['PUT'])
 # def putProvider():
 #    pass
    
@@ -44,17 +44,33 @@ def getHealth():
 # def postRate():
 #     pass
 
-# @app.route('/postTruck', methods=['POST'])
-# def postTrucks():
-#     pass
+@app.route('/addTrucks', methods=['POST'])
+def postTrucks():
+   truckid=request.form.get("Truck ID")
+   provid=request.form.get("Provider ID")
+   val=(truckid,provid)
+   post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%s)"
+   cursor.execute(post_truck,val)
+   cnx.commit()
+   return redirect(url_for("getTrucks"))
+   
 
-# @app.route('/getTruck', methods=['GET'])
-# def getTrucks():
-#     pass
+@app.route('/trucks', methods=['GET'])
+def getTrucks():
+    cursor.execute('SElECT * FROM Trucks')
+    results = cursor.fetchall()
+    return render_template("trucks.html",truck_list =results)
 
-# @app.route('/putTruck', methods=['PUT'])
-# def getTrucks():
-#     pass
+@app.route('/updateTrucks/<string:id>', methods=['PUT'])
+def putTrucks(id):
+    truckid=id
+    provid=provid=request.form.get("Provider ID")
+    val=(provid,truckid)
+    put_truck="UPDATE Trucks SET provider_id = %s WHERE id = %s"
+    cursor.execute(put_truck,val)
+    cnx.commit()
+    return redirect(url_for("getTrucks"))
+    
 
 
 @app.route('/bill', methods=["GET"])

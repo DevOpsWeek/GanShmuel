@@ -1,4 +1,7 @@
-<form action="http://0.0.0.0:5000/bill" method = "POST">
-    <p>Provider Name <input type = "text" name = "Provider name" /></p>
- </form>
- <a href="/bill">Show my bill</a>
+{% extends 'base.html' %}
+{% block head %}
+<title>Main Page</title>
+{% endblock %}
+<a href="/trucks">Truck Page</a>
+<a href="/providers">Provider Page</a>
+{% block body %}
