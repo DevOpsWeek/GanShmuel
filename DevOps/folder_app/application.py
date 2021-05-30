@@ -7,11 +7,14 @@ os.system(clone_repo)
 
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
-        os.system(i)
+        if i=="DevOps/folder_app":
+            os.chdir(i)
+        else:
+            os.system(i)
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
-    command_list=["ls","pwd",f"git checkout --track origin/{branch_name}","pwd","ls","docker build .","docker run -d ."]
+    command_list=["ls","pwd",f"git checkout --track origin/{branch_name}","DevOps/folder_app","ls","docker build .","docker run -d ."]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir("GanShmuel")
         create_docker_compose(command_list,branch_name)
