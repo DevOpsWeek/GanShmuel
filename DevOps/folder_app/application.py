@@ -11,8 +11,8 @@ def run_docker(branch_name):
     #command_list=[f"git checkout --track origin/{branch_name}",f"cd {branch_name}","docker compose up ."]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         #create_docker_compose(command_list,branch_name)
-        command="ls"
-        os.system(command)
+        cmd="ls"
+        os.system(cmd)
         subprocess.call("script.sh") 
         print("exucuted the docker compose file ! ")
         return "exucuted the docker compose file ! "
