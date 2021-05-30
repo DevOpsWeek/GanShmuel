@@ -1,4 +1,4 @@
 #!/bin/bash
-git checkout --track origin/$1
-cd $1
+git checkout --track origin/Billing
+cd Billing
 docker compose up .
