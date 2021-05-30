@@ -11,7 +11,7 @@ def create_docker_compose(command_list,branch_name):
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
-    command_list=["ls",f"cd GanShmuel/{branch_name}/folder_app/","ls",f"git checkout --track origin/{branch_name}","ls","ls","docker build .","docker run -d ."]
+    command_list=["ls",f"cd app/GanShmuel/{branch_name}/folder_app/","ls",f"git checkout --track origin/{branch_name}","ls","ls","docker build .","docker run -d ."]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         create_docker_compose(command_list,branch_name)
         print("exucuted the docker compose file ! ")
@@ -31,4 +31,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
-
