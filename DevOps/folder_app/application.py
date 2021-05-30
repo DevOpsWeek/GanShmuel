@@ -1,4 +1,4 @@
-import json,os
+import json,os,subprocess
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -8,9 +8,10 @@ def create_docker_compose(command_list,branch_name):
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
-    command_list=[f"git checkout --track origin/{branch_name}",f"cd {branch_name}","docker compose up ."]
+    #command_list=[f"git checkout --track origin/{branch_name}",f"cd {branch_name}","docker compose up ."]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
-        create_docker_compose(command_list,branch_name)
+        #create_docker_compose(command_list,branch_name)
+        run_script = subprocess.call("script.sh")
         print("exucuted the docker compose file ! ")
         return "exucuted the docker compose file ! "
     else:
