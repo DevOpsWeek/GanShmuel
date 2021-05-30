@@ -1,3 +1,5 @@
 Flask
-mysql-connector
 mysql-connector-python
+mysql-connector
+openpyxl
+typing
