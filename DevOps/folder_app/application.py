@@ -1,4 +1,5 @@
-import json,os,subprocess
+import json,os
+from subprocess import call
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -13,7 +14,7 @@ def run_docker(branch_name):
         #create_docker_compose(command_list,branch_name)
         command="ls"
         os.system(command)
-        run_script = subprocess.call("script.sh")
+        rc = call("./script.sh")
         print("exucuted the docker compose file ! ")
         return "exucuted the docker compose file ! "
     else:
