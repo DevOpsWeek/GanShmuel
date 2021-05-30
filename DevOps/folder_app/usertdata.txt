@@ -11,34 +11,3 @@ apt-get install -y docker-ce
 usermod -aG docker ubuntu
 curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-# just try dont use
-#test
-#test again
-#test again again
-#test again again again
-#test 4X
-#test 5X again
-#test 6X
-#test 7X
-#test X8
-#test 9X
-#test 10X
-#test 11X
-#test 12X
-#test 13X
-#test14
-#test15
-
-#test16
-#test 17X
-#test 18X
-#test 19X
-#test 20X
-#test 21X
-#test 22x
-#test 23X
-#test 24X
-#test 25X
-#test 26X
-#test 27X
-#test 28X
