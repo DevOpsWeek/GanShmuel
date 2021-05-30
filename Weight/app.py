@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, render_template, request, redirect
+from flask import Flask, jsonify, render_template, request, redirect, Response
+from flask_table import Table, Col
 import logging
 from datetime import datetime
 from flaskext.mysql import MySQL
 import pandas
 import os
-import json
 
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ app.config['MYSQL_PORT'] = '3306'
 # run "sudo docker inspect mysql_cont" to find your host address for testing (Boris showed me)
 # the second bit increments by 1 every time you run docker compse
 # (for example: 172.14.0.2 will become 172.15.0.2 next time you compose) -V. Churikov
-app.config['MYSQL_DATABASE_HOST'] = '172.23.0.2'
+app.config['MYSQL_DATABASE_HOST'] = '172.18.0.2'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '0000'
 app.config['MYSQL_DATABASE_DB'] = 'weight'
@@ -27,7 +27,6 @@ date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
 conn = mysql.connect()
 cursor = conn.cursor()
 
-
 @app.route("/", methods=["GET"])
 def index4():
     return render_template("index.html")
@@ -36,10 +35,12 @@ def index4():
 @app.route("/health", methods=["GET"])
 def health():
     try:
-        cursor.execute("SELECT 1")
-        return '<h1>Status Code: 200.</h1>'
+        cursor.execute("SELEC 1")
+        return Response(status=200)
+        #return '<h1>Status Code: 200.</h1>'
     except:
-        return '<h1>Status Code: 500.</h1>'
+        return Response(status=500)
+        #return '<h1>Status Code: 500.</h1>'
 
 
 # Declaration of function that imports CSV tables into our database,
@@ -58,7 +59,9 @@ def parse(filePath):
         print("ERROR: Failed to parse file, *.csv or *.json file required")
         return "ERROR: Failed to parse file, *.csv or *.json file required"
 
-    csvData = pandas.read_csv(filePath,names=col_names, skiprows=1)
+    csvData = pandas.read_csv(filePath,names=col_names, skiprows=1,)
+    csvData.fillna(0, inplace=True)
+    print(csvData)
     with open(filePath) as file:
         contents = file.read()
         search_word = 'kg'
@@ -120,7 +123,9 @@ def index3():
 
 @app.route("/unknown.html", methods=["POST", "GET"])
 def index5():
-    return render_template("unknown.html")
+    cursor.execute('SELECT * FROM containers_registered WHERE weight=0')
+    data = cursor.fetchall()
+    return render_template("unknown.html", data=data)
 
 
 if __name__ == "__main__":

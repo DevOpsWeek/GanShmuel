@@ -44,23 +44,24 @@ table, th, td {
 			<div>
 				<ul class="blog">
 					<li>
-
-			<table style="width:100%">
-				  <tr>
-					<th>ContainerID</th>
-					<th>Weight</th>
-				  </tr>
-				  <tr>
-					<td>Jill</td>
-					<td>Smith</td>
-					
-				  </tr>
-				  <tr>
-					<td>Eve</td>
-					<td>Jackson</td>
-					
-				  </tr>
-				</table>
+			<table>
+			<thead>
+			    <tr>
+			        <th>Container ID</th>
+			        <th>Weight</th>
+			        <th>Unit</th>
+			    </tr>
+			    </thead>    
+			    <tbody>
+			     {% for row in data %}    
+			            <tr>
+			                <td>{{row[0]}}</td>
+			                <td>{{row[1]}}</td>
+			                <td>{{row[2]}}</td>
+			            </tr>
+			        {% endfor %}
+			    </tbody>
+			</table>
 					</li>
 					<br>
 					<br>
