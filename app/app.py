@@ -54,14 +54,18 @@ def getRate():
 
 @app.route('/downloadrates')
 def downloadRates():
-    p = "./in/rates.xlsx"
-    return send_file(p,as_attachment=True)    
+    p = "in/rates.xlsx"
+    if os.path.exists(os.path.dirname('./app/in/rates.xlsx')):
+        return send_file(p,as_attachment=True)
+    else:
+        return render_template("getRates.html", message = "file not found")
+    
 
 @app.route('/rates', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
         file = request.files["file"]
-        file.save(os.path.join(UPLOAD_DIRECTORY, file.filename))
+        file.save(os.path.join(os.path.dirname('./app/in/'), file.filename))
         return render_template("getRates.html", message="success")
     return render_template("getRates.html", message = "Upload")
     
