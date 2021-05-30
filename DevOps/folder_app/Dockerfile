@@ -4,7 +4,7 @@ COPY ./application.py .
 COPY ./requirements.txt .
 COPY ./script.sh .
 RUN pip install -r requirements.txt \
-    && pip install GitPython
+    && pip install GitPython \
+    && chmod u+rx script.sh
 ENTRYPOINT [ "python3" ]
 CMD ["application.py"]
-
