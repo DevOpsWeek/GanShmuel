@@ -6,25 +6,29 @@
 {% block body %}
 
 <div class="box">
-<form action=/addTrucks method = "post">
-    <label for="title">Adding Truck</label>
-    <input type="text" name="Truck ID" placeholder="Truck's ID?"><br>
-    <input type="text" name="Provider ID" placeholder="Truck Provider ID"><br>
-            <button type="submit">Add</button>
- </form>
- 
-    {% for truck in truck_list %}
-            <h3>Truck:{{ truck }}</h3>
- <form action=/updateTrucks/{{truck[0]}} method ='put'> 
-    <input type="text" name="Provider ID" placeholder="Truck Provider ID"><br>
-            <button type="submit">Update</button>
- </form>
- {% endfor %}
+        <form action="/addTrucks" method = "post">
+                 <label for="title">Adding Truck</label>
+                        <input type="text" name="Truck_ID" placeholder="Truck's ID?"><br>
+                        <input type="number" name="Provider_ID" placeholder="Truck Provider ID"><br>
+                                 <button type="submit">Add</button>
+        </form>
 
+        {% for truck in truck_list %}
+                <h3>Truck_ID:{{truck[0]}}|Provider_ID:{{truck[1]}}</h3>
+                <form action="/update/{{trunk[0]}}" method="post">
+                        <lablel for="New_Provider_ID">Update Provider ID</label>
+                        <input type="number" name="New_Provider_ID" placeholder="Update Provider?"><br>
+                        <button type="sumbit">Update</button>
+                </form>
+        {% endfor %}
+
+
+
+        <a href="/">return to main</a>
+        <a href="/providers">Provider Page</a>
+        <a href="/bill">Show my bill</a>
 </div>
+
 {% endblock %}
-<a href="/">return to main</a>
-<a href="/providers">Provider Page</a>
-<a href="/bill">Show my bill</a>
 </body>
 </html>

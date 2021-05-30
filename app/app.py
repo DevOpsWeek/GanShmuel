@@ -10,7 +10,7 @@ app = Flask(__name__)
     # PUT /provider/{id} 	
 	# POST /rates	
 	# GET /rates	
-	# POST /truck	
+	# POST /truck x
 	# PUT /truck{id}	
     # GET /truck<id>?from=t1&to=t2
 	# GET /bill	
@@ -59,14 +59,14 @@ def postTrucks():
 def getTrucks():
     cursor.execute('SElECT * FROM Trucks')
     results = cursor.fetchall()
-    return render_template("trucks.html",truck_list =results)
+    return render_template("trucks.html",trucks=results)
 
 @app.route('/updateTrucks/<string:id>', methods=['PUT'])
 def putTrucks(id):
+    provid=request.form['New Provider ID']
     truckid=id
-    provid=request.form.get("Provider ID")
     val=(provid,truckid)
-    put_truck="UPDATE Trucks SET provider_id = %s WHERE id = %d"
+    put_truck="UPDATE Trucks SET provider_id = %s WHERE id = %s"
     cursor.execute(put_truck,val)
     cnx.commit()
     return redirect(url_for("getTrucks"))
