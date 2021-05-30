@@ -11,8 +11,9 @@ def create_docker_compose(command_list,branch_name):
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
-    command_list=["ls","pwd",f"cd /app/GanShmuel/","ls","pwd",f"git checkout --track origin/{branch_name}","pwd","ls","ls","docker build .","docker run -d ."]
+    command_list=["ls","pwd",f"git checkout --track origin/{branch_name}","pwd","ls","docker build .","docker run -d ."]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
+        os.chdir("GanShmuel")
         create_docker_compose(command_list,branch_name)
         print("exucuted the docker compose file ! ")
         return "exucuted the docker compose file ! "
