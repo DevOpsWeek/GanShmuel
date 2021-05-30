@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block head %}    
+    <title>Provider Page</title>
+{% endblock %}
+
+{% block body %}
+    <div class="box">
+
+        <form action="/addProvider" method="post">
+            <label for="title">Adding Provider</label>
+            <input type="text" name="prov_name" placeholder="Provider Name"><br>
+            <input type="number" name="id" placeholder="Provider ID"><br>
+            <button type="submit">Add</button>
+        </form>
+
+        {% for provid in provid_list %}
+            <h3>{{ provid[0] }} | {{ provid[1] }}</h3>
+        {% endfor %}
+
+        <form action="/updateProvider" method="post">
+            <label for=title>Update Provider Name</label>
+            <input type="text" name="new_name" placeholder="Provider_new_Name"><br>
+            <input type="number" name="id" placeholder="Provider ID"<br>
+            <button type="submit">Update</button>
+        </form>
+           
+    </div>
+
+{% endblock %}
