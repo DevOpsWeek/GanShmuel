@@ -5,14 +5,15 @@ import json
 
 app = Flask(__name__)
 
-	# GET /health	
-	# POST /provider	
+	# GET /health x
+	# POST /provider
+    # PUT /provider/{id} 	
 	# POST /rates	
 	# GET /rates	
 	# POST /truck	
-	# PUT /truck	
+	# PUT /truck{id}	
+    # GET /truck<id>?from=t1&to=t2
 	# GET /bill	
-
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 
@@ -22,31 +23,36 @@ def index():
 
 @app.route('/health',methods=['GET'])
 def getHealth():
-    check = cnx.is_connected()
-    if check is False:
+    if cnx.is_connected() is False:
      return "500"
     return "200"
 
-@app.route('/providers')
+@app.route('/providers',methods=['POST'])
 def postProvider():
-   pass
-
-@app.route('/rates')
-def getRate():
     pass
 
+# @app.route('/postRates',methods=['POST'])
+# def postRate():
+#     pass
 
-@app.route("/postTruck", methods=['POST'])
-def getTrucks():
-    pass
+# @app.route('/getRates',methods=['GET'])
+# def postRate():
+#     pass
+
+# @app.route('/postTruck', methods=['POST'])
+# def postTrucks():
+#     pass
+
+# @app.route('/getTruck', methods=['GET'])
+# def getTrucks():
+#     pass
+
+# @app.route('/putTruck', methods=['PUT'])
+# def getTrucks():
+#     pass
 
 
-
-# @app.route("/putTruck", methods=["PUT"])
-# def putTruck():
-#     return "truck"
-
-@app.route("/bill", methods=["GET"])
+@app.route('/bill', methods=["GET"])
 def getBill():
    return render_template('bill.html')
 
