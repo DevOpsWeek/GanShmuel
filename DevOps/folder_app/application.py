@@ -2,21 +2,17 @@ import json,os,subprocess
 from flask import Flask, request
 app = Flask(__name__)
 
-clone_repo="git clone https://github.com/DevOpsWeek/GanShmuel.git"
-os.system(clone_repo)
-
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
-        if i==f"{branch_name}/folder_app" or i=="GanShmuel":
+        if i==f"{branch_name}/folder_app":
             os.chdir(i)
         else:
             os.system(i)
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
-    branch_lower=branch_name.lower()
-    
-    command_list=["ls","GanShmuel",f"docker rm $(docker stop $(docker ps -a -q --filter=\"name={branch_lower}-container\"))",f"git checkout --track origin/{branch_name}",f"{branch_name}/folder_app",f"docker build -t image/{branch_lower} .",f"docker run -d --name {branch_lower}-container image/{branch_lower}"]
+    branch_lower=branch_name.lower()  
+    command_list=["git clone https://github.com/DevOpsWeek/GanShmuel.git","ls",f"docker rm $(docker stop $(docker ps -a -q --filter=\"name={branch_lower}-container\"))",f"git checkout --track origin/{branch_name}",f"{branch_name}/folder_app",f"docker build -t image/{branch_lower} .",f"docker run -d --name {branch_lower}-container image/{branch_lower}"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir("GanShmuel")
         create_docker_compose(command_list,branch_name)
