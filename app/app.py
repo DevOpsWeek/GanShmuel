@@ -25,10 +25,8 @@ def index():
 @app.route('/health',methods=['GET'])
 def getHealth():
     if cnx.is_connected() is False:
-        Response(status=500)
-        return 500
-    Response(status=200)
-    return 200 
+        return Response(status=500)
+    return Response(status=200) 
 
 
 @app.route('/providers')
@@ -42,7 +40,7 @@ def postProvider():
     prov_name=request.form.get("new_name")
     id=request.form.get("id")
     sql='''UPDATE Providers SET provider_name = %s WHERE id = %s'''
-    val=(id,prov_name)
+    val=(prov_name,id)
     cursor.execute(sql,val)
     cnx.commit()
     return redirect(url_for("Providers"))
