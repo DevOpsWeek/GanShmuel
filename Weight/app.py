@@ -14,7 +14,7 @@ app.config['MYSQL_PORT'] = '3306'
 # run "sudo docker inspect mysql_cont" to find your host address for testing (Boris showed me)
 # the second bit increments by 1 every time you run docker compse
 # (for example: 172.14.0.2 will become 172.15.0.2 next time you compose) -V. Churikov
-app.config['MYSQL_DATABASE_HOST'] = '172.18.0.2'
+app.config['MYSQL_DATABASE_HOST'] = '172.19.0.2'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '0000'
 app.config['MYSQL_DATABASE_DB'] = 'weight'
@@ -43,8 +43,7 @@ def health():
         #return '<h1>Status Code: 500.</h1>'
 
 
-# Declaration of function that imports CSV tables into our database,
-# uncomment the function call below this declaration for testing  -V. Churikov
+# Declaration of function that imports CSV tables into our database
 def parse(filePath):
     col_names = ['container_id', 'weight', 'unit']
     tempfilePath = os.path.join(os.getcwd() + '/temp-deleteme.csv') #converted csv copy for processing, will be deleted after
@@ -90,12 +89,12 @@ def parse(filePath):
 
 @app.route("/db", methods=["GET"]) #SHOWS DATABASE
 def index():
-    cursor.execute('''select * from containers_registered''')
-    return jsonify(cursor.fetchall())
-    #return "This time is: " + date_time -- displays the time
+    cursor.execute('SELECT * FROM containers_registered')
+    data = cursor.fetchall()
+    return render_template("unknown.html", data=data)
 
 
-@app.route("/batch-weight.html", methods=["POST","GET"])
+@app.route("/batch-weight", methods=["POST","GET"])
 def index2():
     if request.method == 'POST':
         print(request.files)
@@ -121,11 +120,24 @@ def index2():
 def index3():
     return render_template("index.html")
 
-@app.route("/unknown.html", methods=["POST", "GET"])
+@app.route("/unknown", methods=["POST", "GET"])
 def index5():
     cursor.execute('SELECT * FROM containers_registered WHERE weight=0')
     data = cursor.fetchall()
     return render_template("unknown.html", data=data)
+
+@app.route("/weight", methods=["POST", "GET"])
+def index6():
+    return render_template("weight.html")
+
+@app.route("/session", methods=["POST", "GET"])
+def index7():
+    return render_template("session.html")
+
+@app.route("/item", methods=["POST", "GET"])
+def index8():
+    return render_template("item.html")
+
 
 
 if __name__ == "__main__":
