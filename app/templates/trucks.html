@@ -8,15 +8,19 @@
 <div class="box">
 <form action=/addTrucks method = "post">
     <label for="title">Adding Truck</label>
-    <input type="text" name="Provider ID" placeholder="Truck Provider ID"><br>
     <input type="text" name="Truck ID" placeholder="Truck's ID?"><br>
+    <input type="text" name="Provider ID" placeholder="Truck Provider ID"><br>
             <button type="submit">Add</button>
  </form>
+ 
     {% for truck in truck_list %}
-            <h3>{{ truck }}</h3>
-        
-        {% endfor %}
- </form> 
+            <h3>Truck:{{ truck }}</h3>
+ <form action=/updateTrucks/{{truck[0]}} method ='put'> 
+    <input type="text" name="Provider ID" placeholder="Truck Provider ID"><br>
+            <button type="submit">Update</button>
+ </form>
+ {% endfor %}
+
 </div>
 {% endblock %}
 <a href="/">return to main</a>

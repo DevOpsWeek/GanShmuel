@@ -1,5 +1,5 @@
 from typing import List, Dict
-from flask import Flask,request,render_template,redirect,url_for
+from flask import Flask,request,render_template,redirect,url_for,Response
 import mysql.connector
 import json
 
@@ -25,8 +25,8 @@ def index():
 @app.route('/health',methods=['GET'])
 def getHealth():
     if cnx.is_connected() is False:
-     return "500"
-    return "200"
+     return Response(status=500)
+    return Response(status=200)
 
 # @app.route('/postproviders',methods=['POST'])
 # def postProvider():
@@ -49,7 +49,7 @@ def postTrucks():
    truckid=request.form.get("Truck ID")
    provid=request.form.get("Provider ID")
    val=(truckid,provid)
-   post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%s)"
+   post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%d)"
    cursor.execute(post_truck,val)
    cnx.commit()
    return redirect(url_for("getTrucks"))
@@ -64,9 +64,9 @@ def getTrucks():
 @app.route('/updateTrucks/<string:id>', methods=['PUT'])
 def putTrucks(id):
     truckid=id
-    provid=provid=request.form.get("Provider ID")
+    provid=request.form.get("Provider ID")
     val=(provid,truckid)
-    put_truck="UPDATE Trucks SET provider_id = %s WHERE id = %s"
+    put_truck="UPDATE Trucks SET provider_id = %s WHERE id = %d"
     cursor.execute(put_truck,val)
     cnx.commit()
     return redirect(url_for("getTrucks"))
