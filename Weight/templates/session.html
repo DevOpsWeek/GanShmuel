@@ -3,15 +3,9 @@
 <html>
 <head>
 <style>
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-}
-
-
 </style>
 	<meta charset="UTF-8">
-	<link rel="stylesheet" href="static/css/style3.css" type="text/css">
+	<link rel="stylesheet" href="static/css/style4.css" type="text/css">
 </head>
 <body>
 
@@ -20,7 +14,7 @@ table, th, td {
 		<div class="header">
 			<div>
 				<img width="200" height="200" src="static/images/logo.png" alt="logo"></a>
-						<ul>
+				<ul>
 				<li class="selected">
 						<a href="index.html">Home</a>
 					</li>
@@ -39,9 +33,7 @@ table, th, td {
 					<li>
 						<a href="item">Item</a>
 					</li>
-					
 				</ul>
-		
 			</div>
 		</div>
 		<div class="body">
@@ -53,24 +45,15 @@ table, th, td {
 			<div>
 				<ul class="blog">
 					<li>
-			<table>
-			<thead>
-			    <tr>
-			        <th>Container ID</th>
-			        <th>Weight</th>
-			        <th>Unit</th>
-			    </tr>
-			    </thead>    
-			    <tbody>
-			     {% for row in data %}    
-			            <tr>
-			                <td>{{row[0]}}</td>
-			                <td>{{row[1]}}</td>
-			                <td>{{row[2]}}</td>
-			            </tr>
-			     {% endfor %}
-			    </tbody>
-			</table>
+<form method="POST" action="">
+        <center>
+            <H3>Enter Sessions ID</H3> <br>
+            <form method="POST">
+                id: <input type="text" name="id"><br>
+                <input type="submit" value="Submit"><br>
+            </form>
+        </center>
+    </form>
 					</li>
 					<br>
 					<br>
