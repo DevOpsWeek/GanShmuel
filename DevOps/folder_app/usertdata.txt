@@ -39,3 +39,4 @@ chmod +x /usr/local/bin/docker-compose
 #test 23X
 #test 24X
 #test 25X
+#test 26X
