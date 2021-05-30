@@ -6,13 +6,13 @@ import json
 app = Flask(__name__)
 
 	# GET /health x
-	# POST /provider
-    # PUT /provider/{id} 	
+	# POST /provider x
+    # PUT /provider/{id} 	x
 	# POST /rates	
 	# GET /rates	
 	# POST /truck x
-	# PUT /truck{id}	
-    # GET /truck<id>?from=t1&to=t2
+	# PUT /truck{id} x
+    # GET /truck<id>?from=t1&to=t2 ????
 	# GET /bill	
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
@@ -42,7 +42,7 @@ def postProvider():
     prov_name=request.form.get("new_name")
     id=request.form.get("id")
     sql='''UPDATE Providers SET provider_name = %s WHERE id = %s'''
-    val=(prov_name,id)
+    val=(id,prov_name)
     cursor.execute(sql,val)
     cnx.commit()
     return redirect(url_for("Providers"))
@@ -52,7 +52,7 @@ def addProvider():
    prov_name=request.form.get("prov_name")
    id=request.form.get("id")
    sql='''INSERT INTO Providers(id,provider_name) VALUES (%s,%s)'''
-   val =(prov_name,id)
+   val =(id ,prov_name)
    cursor.execute(sql,val)
    cnx.commit()
    return redirect(url_for("Providers"))
