@@ -25,16 +25,37 @@ def index():
 @app.route('/health',methods=['GET'])
 def getHealth():
     if cnx.is_connected() is False:
-     return Response(status=500)
-    return Response(status=200)
+        Response(status=500)
+        return 500
+    Response(status=200)
+    return 200 
 
-# @app.route('/postproviders',methods=['POST'])
-# def postProvider():
-#    pass
 
-# @app.route('/putproviders',methods=['PUT'])
-# def putProvider():
-#    pass
+@app.route('/providers')
+def Providers():
+    cursor.execute('SElECT * FROM Providers')
+    results = cursor.fetchall()
+    return render_template("providers.html",provid_list=results)
+
+@app.route('/updateProvider',methods=['POST'])
+def postProvider():
+    prov_name=request.form.get("new_name")
+    id=request.form.get("id")
+    sql='''UPDATE Providers SET provider_name = %s WHERE id = %s'''
+    val=(prov_name,id)
+    cursor.execute(sql,val)
+    cnx.commit()
+    return redirect(url_for("Providers"))
+
+@app.route('/addProvider',methods=['POST'])
+def addProvider():
+   prov_name=request.form.get("prov_name")
+   id=request.form.get("id")
+   sql='''INSERT INTO Providers(id,provider_name) VALUES (%s,%s)'''
+   val =(prov_name,id)
+   cursor.execute(sql,val)
+   cnx.commit()
+   return redirect(url_for("Providers"))
    
 # @app.route('/postRates',methods=['POST'])
 # def postRate():
@@ -52,32 +73,27 @@ def Trucks():
 
 
 
-# @app.route('/updateTrucks/<string:id>',method=['put'])
-# def updateTruck(id):
-#     truckid=id
-#     provid=request.form["new_prov_id"]
-#     val=(provid,truckid)
-#     put_trucks="UPDATE Trucks SET provider_id =%s WHERE id=%s"
-#     cursor.execute(put_trucks,val)
-#     cnx.commit()
-#     return redirect(url_for("Trucks"))
+@app.route('/updateTrucks' ,methods=['post'])
+def updateTruck():
+    truckid=request.form.get("id")
+    provid=request.form.get("new_prov_id")
+    sql='''UPDATE Trucks SET provider_id = %s WHERE id = %s'''
+    val=(provid,truckid)
+    cursor.execute(sql,val)
+    cnx.commit()
+    return redirect(url_for("Trucks"))
 
 
 @app.route('/addTrucks', methods=['POST'])
 def addTruck():
-   truckid=request.form.get("truck_id")
+   truckid=request.form.get("id")
    provid=request.form.get("prov_id")
-   val=(truckid,provid)
-   post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%s)"
-   cursor.execute(post_truck,val)
+   sql='''INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)'''
+   val =(truckid,provid)
+   cursor.execute(sql,val)
    cnx.commit()
    return redirect(url_for("Trucks"))
    
-
-    
-    
-
-
 @app.route('/bill', methods=["GET"])
 def getBill():
    return render_template('bill.html')

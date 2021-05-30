@@ -1,23 +1,30 @@
 {% extends 'base.html' %}
-{% block head %}
-<title>Truck Page</title>
+
+{% block head %}    
+    <title>Truck Page</title>
 {% endblock %}
 
 {% block body %}
     <div class="box">
-        <form action="/add" method="post">
+
+        <form action="/addTrucks" method="post">
             <label for="title">Adding Truck</label>
-            <input type="text" name="truck_id" placeholder="Truck ID?"><br>
-            <input type="number" name="prov_id" placeholder="Provider ID?"><br>
+            <input type="text" name="id" placeholder="Truck ID"><br>
+            <input type="number" name="prov_id" placeholder="Provider ID"><br>
             <button type="submit">Add</button>
         </form>
+
         {% for truck in truck_list %}
             <h3>{{ truck[0] }} | {{ truck[1] }}</h3>
-            <form action="update/{{truck[0]}}" method="post">
-            <label for=title>Update Provider</label>
-            <input type="number" name="new_prov_id" placeholder="{{truck[1]}}"<br>
-            <button type="submit">Update</button>
-           
         {% endfor %}
+
+        <form action="/updateTrucks" method="post">
+            <label for=title>Update Provider</label>
+            <input type="text" name="id" placeholder="Truck ID_to_Update"><br>
+            <input type="number" name="new_prov_id"<br>
+            <button type="submit">Update</button>
+        </form>
+           
     </div>
+
 {% endblock %}
