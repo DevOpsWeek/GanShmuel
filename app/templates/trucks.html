@@ -14,7 +14,7 @@
         {% for truck in truck_list %}
             <h3>{{ truck[0] }} | {{ truck[1] }}</h3>
             <form action="update/{{truck[0]}}" method="post">
-            <label for=title>Update Provider></label>
+            <label for=title>Update Provider</label>
             <input type="number" name="new_prov_id" placeholder="{{truck[1]}}"<br>
             <button type="submit">Update</button>
            

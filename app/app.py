@@ -44,32 +44,36 @@ def getHealth():
 # def postRate():
 #     pass
 
+@app.route('/trucks')
+def Trucks():
+    cursor.execute('SElECT * FROM Trucks')
+    results = cursor.fetchall()
+    return render_template("trucks.html",truck_list=results)
+
+
+
+# @app.route('/updateTrucks/<string:id>',method=['put'])
+# def updateTruck(id):
+#     truckid=id
+#     provid=request.form["new_prov_id"]
+#     val=(provid,truckid)
+#     put_trucks="UPDATE Trucks SET provider_id =%s WHERE id=%s"
+#     cursor.execute(put_trucks,val)
+#     cnx.commit()
+#     return redirect(url_for("Trucks"))
+
+
 @app.route('/addTrucks', methods=['POST'])
-def postTrucks():
+def addTruck():
    truckid=request.form.get("truck_id")
    provid=request.form.get("prov_id")
    val=(truckid,provid)
    post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%s)"
    cursor.execute(post_truck,val)
    cnx.commit()
-   return redirect(url_for("getTrucks"))
+   return redirect(url_for("Trucks"))
    
 
-@app.route('/trucks', methods=['GET'])
-def getTrucks():
-    cursor.execute('SElECT * FROM Trucks')
-    results = cursor.fetchall()
-    return render_template("trucks.html",truck_list=results)
-
-@app.route('/updateTrucks/<string:id>')
-def putTrucks(id):
-    truckid=id
-    provid=request.form["new_prov_id"]
-    val=(provid,truckid)
-    put_trucks="UPDATE Trucks SET provider_id =%s WHERE id=%s"
-    cursor.execute(put_trucks,val)
-    return 
-    
     
     
 
