@@ -4,16 +4,12 @@ app = Flask(__name__)
 
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
-        if i==f"{branch_name}":
-            os.chdir(i)
-        else:
-            os.system(i)
+        os.system(i)
     print(f"------- worked on branch {branch_name} -------")
 
 def run_docker(branch_name):
-    branch_lower=branch_name.lower()  
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
-    command_list=["docker-compose down",f"git checkout --track origin/{branch_name}",f"{branch_name}",f"docker build -t image/{branch_lower} .","docker-compose up -d"]
+    command_list=["docker-compose down",f"git checkout --track origin/{branch_name}","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"GanShmuel/{branch_name}")
         create_docker_compose(command_list,branch_name)
@@ -33,4 +29,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
-
