@@ -16,6 +16,7 @@ app = Flask(__name__)
 	# GET /bill	
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
+cursor=cnx.cursor()
 
 @app.route('/',methods=['GET'])
 def index():
@@ -27,10 +28,14 @@ def getHealth():
      return "500"
     return "200"
 
-@app.route('/providers',methods=['POST'])
-def postProvider():
-    pass
+# @app.route('/providers',methods=['POST'])
+# def postProvider():
+#    pass
 
+# @app.route('/providers',methods=['PUT'])
+# def putProvider():
+#    pass
+   
 # @app.route('/postRates',methods=['POST'])
 # def postRate():
 #     pass
