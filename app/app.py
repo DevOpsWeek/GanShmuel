@@ -46,10 +46,10 @@ def getHealth():
 
 @app.route('/addTrucks', methods=['POST'])
 def postTrucks():
-   truckid=request.form.get("Truck ID")
-   provid=request.form.get("Provider ID")
+   truckid=request.form.get("truck_id")
+   provid=request.form.get("prov_id")
    val=(truckid,provid)
-   post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%d)"
+   post_truck="INSERT into Trucks (id,provider_id) VALUES(%s,%s)"
    cursor.execute(post_truck,val)
    cnx.commit()
    return redirect(url_for("getTrucks"))
@@ -59,17 +59,18 @@ def postTrucks():
 def getTrucks():
     cursor.execute('SElECT * FROM Trucks')
     results = cursor.fetchall()
-    return render_template("trucks.html",trucks=results)
+    return render_template("trucks.html",truck_list=results)
 
-@app.route('/updateTrucks/<string:id>', methods=['PUT'])
+@app.route('/updateTrucks/<string:id>')
 def putTrucks(id):
-    provid=request.form['New Provider ID']
     truckid=id
+    provid=request.form["new_prov_id"]
     val=(provid,truckid)
-    put_truck="UPDATE Trucks SET provider_id = %s WHERE id = %s"
-    cursor.execute(put_truck,val)
-    cnx.commit()
-    return redirect(url_for("getTrucks"))
+    put_trucks="UPDATE Trucks SET provider_id =%s WHERE id=%s"
+    cursor.execute(put_trucks,val)
+    return 
+    
+    
     
 
 
