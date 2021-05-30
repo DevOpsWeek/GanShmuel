@@ -15,7 +15,7 @@ def run_docker(branch_name):
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
     command_list=["docker-compose down",f"git checkout --track origin/{branch_name}",f"{branch_name}",f"docker build -t image/{branch_lower} .","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
-        os.chdir("GanShmuel")
+        os.chdir(f"GanShmuel/{branch_name}")
         create_docker_compose(command_list,branch_name)
         print("exucuted the docker compose file ! ")
         return "exucuted the docker compose file ! "
