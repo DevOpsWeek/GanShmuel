@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.3"
 services:
   web:
     image: "hello-world"
@@ -8,3 +8,4 @@ services:
     image: "mysql:latest"
     ports:
       - "3306:3306"
+
