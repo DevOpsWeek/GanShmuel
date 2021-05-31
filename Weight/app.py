@@ -24,11 +24,14 @@ mysql.init_app(app)
 now = datetime.now()  # current date and time
 date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
 
-conn = mysql.connect()
-cursor = conn.cursor()
+
 
 @app.route("/", methods=["GET"])
 def index4():
+    global conn
+    global cursor
+    conn = mysql.connect()
+    cursor = conn.cursor()
     return render_template("index.html")
 
 
