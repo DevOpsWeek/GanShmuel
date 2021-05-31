@@ -25,6 +25,7 @@ def create_docker_compose(command_list,branch_name):
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
     s = subprocess.check_output('docker ps -a |grep -o "Db_container"', shell=True)
+    print(s)
     if( s == Db_container)
         return True
     else 
@@ -35,7 +36,8 @@ def run_docker(branch_name):
     command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"GanShmuel/{branch_name}")
-        run_result=create_docker_compose(command_list,branch_name)  
+        run_result=create_docker_compose(command_list,branch_name)
+        print(run_result)  
         try:
             if run_result==True:
                 print("exucuted the docker compose file ! ")
