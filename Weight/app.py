@@ -1,10 +1,10 @@
 from flask import Flask, jsonify, render_template, request, redirect, Response
-from flask_table import Table, Col
 import logging
 from datetime import datetime
 from flaskext.mysql import MySQL
 import pandas
 import os
+
 
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ app.config['MYSQL_PORT'] = '3306'
 # run "sudo docker inspect mysql_cont" to find your host address for testing (Boris showed me)
 # the second bit increments by 1 every time you run docker compse
 # (for example: 172.14.0.2 will become 172.15.0.2 next time you compose) -V. Churikov
-app.config['MYSQL_DATABASE_HOST'] = '172.19.0.2'
+app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '0000'
 app.config['MYSQL_DATABASE_DB'] = 'weight'
@@ -24,11 +24,14 @@ mysql.init_app(app)
 now = datetime.now()  # current date and time
 date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
 
-conn = mysql.connect()
-cursor = conn.cursor()
+
 
 @app.route("/", methods=["GET"])
 def index4():
+    global conn
+    global cursor
+    conn = mysql.connect()
+    cursor = conn.cursor()
     return render_template("index.html")
 
 
@@ -141,5 +144,5 @@ def index8():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
 
