@@ -7,8 +7,9 @@ import os
 from openpyxl.worksheet import worksheet
 
 UPLOAD_FOLDER = './in/'
+RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
-UPLOAD_DIRECTORY = "./in/"
+
 
 
 app = Flask(__name__)
@@ -60,24 +61,15 @@ def Providers():
 def getRate():
     return render_template("getRates.html")
 
-@app.route('/downloadrates')
+@app.route('/rates/download', methods=['GET'])
 def downloadRates():
-    p = "in/rates.xlsx"
-    if os.path.exists(os.path.dirname('./app/in/rates.xlsx')):
-        return send_file(p,as_attachment=True)
-    else:
-        return render_template("getRates.html", message = "file not found")
-
-print('hahfhasd -test')
-    
+    return send_from_directory(UPLOAD_FOLDER, RATES_FILE, as_attachment=True)
 
 @app.route('/rates', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':
-        file = request.files["file"]
-        file.save(os.path.join(os.path.dirname('./app/in/'), file.filename))
-        return render_template("getRates.html", message="success")
-    return render_template("getRates.html", message = "Upload")
+    file = request.files["file"]
+    file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
+    return render_template("getRates.html")
     
 
 @app.route("/postTruck", methods=['POST'])
