@@ -49,7 +49,7 @@ def getHealth():
 @app.route('/providers')
 def Providers():
     cursor.execute('SElECT * FROM Providers')
-    results = cursor.fetchall()
+    results = (cursor.fetchall())
     return render_template("providers.html",provid_list=results)
     check = cnx.is_connected()
     if check is False:
