@@ -18,25 +18,25 @@ def send_email(branch_name,sender,reciver,result,comitter):
         i noticed a new push to {branch_name} branch whice was comitted by {comitter}\n\
         the result of the push are : \n{result}"
     server.sendmail(sender,reciver,massage)
+    
 
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
+    return True
 
 def run_docker(branch_name):
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
     command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"GanShmuel/{branch_name}")
-        dir_result=os.system("pwd")
-        if dir_result==f"/home/ubuntu/GanShmuel/{branch_name}":
-            run_result=True
-        create_docker_compose(command_list,branch_name)  
-        if run_result==True:
-            print("exucuted the docker compose file ! ")
-            return "exucuted the docker compose file ! "
-        else:
+        run_result=create_docker_compose(command_list,branch_name)  
+        try:
+            if run_result==True:
+                print("exucuted the docker compose file ! ")
+                return "exucuted the docker compose file ! "
+        except:
             print("couldnt run your docker-cmpose file ------------- ABORT  -----------")
             return "couldnt run your docker-cmpose file ------------- ABORT  -----------"
     else:
