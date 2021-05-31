@@ -24,9 +24,9 @@ def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
-    s = subprocess.check_output('docker ps -a |grep -o "Db_container"', shell=True)
-    print(s)
-    if( s == Db_container)
+    s = "docker ps -a |grep -o "Db_container""
+    print(f"output of s:{s}")
+    if( s == "Db_container")
         return True
     else 
         return False
