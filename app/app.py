@@ -2,7 +2,6 @@ from typing import List, Dict
 from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response
 from werkzeug.utils import secure_filename
 import mysql.connector
-import json
 from openpyxl import Workbook, load_workbook
 import os
 from openpyxl.worksheet import worksheet
@@ -57,10 +56,6 @@ def Providers():
      return "500"
     return "200"
 
-@app.route('/providers')
-def postProvider():
-   pass
-
 @app.route('/rates', methods=['GET'])
 def getRate():
     return render_template("getRates.html")
@@ -110,14 +105,6 @@ def addProvider():
    cursor.execute(sql,val)
    cnx.commit()
    return redirect(url_for("Providers"))
-   
-# @app.route('/postRates',methods=['POST'])
-# def postRate():
-#     pass
-
-# @app.route('/getRates',methods=['GET'])
-# def postRate():
-#     pass
 
 @app.route('/trucks')
 def Trucks():
