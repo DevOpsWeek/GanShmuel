@@ -1,5 +1,5 @@
 from typing import List, Dict
-from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response
+from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response,jsonify
 from werkzeug.utils import secure_filename
 import mysql.connector
 from openpyxl import Workbook, load_workbook
@@ -90,7 +90,7 @@ def addProvider():
    val =(id,new_name)
    cursor.execute(insert,val)
    cnx.commit()
-   return redirect(url_for("Providers"))
+   return jsonify(id)
 
 
 @app.route('/trucks')
