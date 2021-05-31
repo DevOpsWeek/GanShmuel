@@ -8,6 +8,10 @@ email_dic={"sender":"devweek.ci.mails@gmail.com","rec_billing":["david45453@gmai
 server=smtplib.SMTP('smtp.gmail.com',587)
 server.starttls()
 server.login(email_dic['sender'],email_dic['password'])
+os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
+os.system("git checkout --track origin/DevOps")
+os.system("git checkout --track origin/Billing")
+os.system("git checkout --track origin/Weight")
 
 def send_email(branch_name,sender,reciver,result,comitter):
     massage=f"Hey ! Im the CI server \n\
@@ -19,14 +23,16 @@ def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
-    return True
 
 def run_docker(branch_name):
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
-    command_list=[f"git checkout --track origin/{branch_name}","docker-compose down","docker-compose up -d"]
+    command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"GanShmuel/{branch_name}")
-        run_result=create_docker_compose(command_list,branch_name)  
+        dir_result=os.system("pwd")
+        if dir_result==f"/home/ubuntu/GanShmuel/{branch_name}":
+            run_result=True
+        create_docker_compose(command_list,branch_name)  
         if run_result==True:
             print("exucuted the docker compose file ! ")
             return "exucuted the docker compose file ! "
@@ -51,7 +57,6 @@ def webhook():
             rec_mail=email_dic['rec_billing']
         elif current_branch[2]=="DevOps":
             rec_mail=email_dic['rec_devops']
-        print(rec_mail) 
         send_email(current_branch[2],email_dic['sender'],rec_mail,respone,commiter)
         print("sent email-worked !")
     except:
