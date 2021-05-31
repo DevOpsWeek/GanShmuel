@@ -23,7 +23,7 @@ def create_docker_compose(command_list,branch_name):
 
 def run_docker(branch_name):
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
-    command_list=["docker-compose down",f"git checkout --track origin/{branch_name}","docker-compose up -d"]
+    command_list=[f"git checkout --track origin/{branch_name}","docker-compose down","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"GanShmuel/{branch_name}")
         run_result=create_docker_compose(command_list,branch_name)  
@@ -34,8 +34,8 @@ def run_docker(branch_name):
             print("couldnt run your docker-cmpose file ------------- ABORT  -----------")
             return "couldnt run your docker-cmpose file ------------- ABORT  -----------"
     else:
-        print("DIDNT GET ANY BRANCH NAME ! ------------- ABORT  -----------")
-        return "DIDNT GET ANY BRANCH NAME ! ------------- ABORT  -----------"
+        print("DIDNT GET ANY VALID BRANCH NAME ! ------------- ABORT  -----------")
+        return "DIDNT GET ANY VALID BRANCH NAME ! ------------- ABORT  -----------"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -60,3 +60,4 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
+
