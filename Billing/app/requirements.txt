@@ -1,5 +1,4 @@
 Flask
 mysql-connector-python
-mysql-connector
 openpyxl
 typing
