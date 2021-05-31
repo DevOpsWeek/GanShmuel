@@ -1,11 +1,10 @@
 version: "3.8"
 
 services:
-  database:
-    container_name: mysql_cont
+  db:
     image: mysql:8.0.25
     command: --default-authentication-plugin=mysql_native_password
-    restart: always
+    # restart: always
 #    deploy:
 #      restart_policy:
 #        condition: on-failure
@@ -16,9 +15,14 @@ services:
       MYSQL_ROOT_PASSWORD: "0000"
       MYSQL_DATABASE: "weight"
     ports:
-      - 127.0.0.2:4000:3306
+      - 3306
     volumes:
     - ./create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
 
-
-
+  web:
+    build: .
+    ports:
+      - 5000:5000
+    links: 
+      - db
+    
