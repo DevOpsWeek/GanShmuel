@@ -67,10 +67,7 @@ def downloadRates():
         return send_file(p,as_attachment=True)
     else:
         return render_template("getRates.html", message = "file not found")
-
-print('hahfhasd -test')
     
-
 @app.route('/rates', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
