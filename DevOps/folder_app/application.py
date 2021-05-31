@@ -50,7 +50,8 @@ def webhook():
         elif current_branch[2]=="Billing":
             rec_mail=email_dic['rec_billing']
         elif current_branch[2]=="DevOps":
-            rec_mail=email_dic['rec_devops'] 
+            rec_mail=email_dic['rec_devops']
+        print(rec_mail) 
         send_email(current_branch[2],email_dic['sender'],rec_mail,respone,commiter)
         print("sent email-worked !")
     except:
@@ -59,4 +60,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
-
