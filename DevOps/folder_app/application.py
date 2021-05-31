@@ -24,7 +24,11 @@ def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
-    return True
+    s = subprocess.check_output('docker ps -a |grep -o "Db_container"', shell=True)
+    if( s == Db_container)
+        return True
+    else 
+        return False
 
 def run_docker(branch_name):
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
