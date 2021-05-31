@@ -1,0 +1,12 @@
+<h2>Download the rates.xlsx file</h2>
+<p>
+    <a href="{{url_for('downloadRates')}}">Download</a>
+    <p1>Upload rates.xlsx file</p1>
+    <form method=post enctype=multipart/form-data>
+        <input type=file name=file>
+        <input type=submit value=Upload>
+    </form>
+    <p>{{message}}</p>
+
+
+</p>
