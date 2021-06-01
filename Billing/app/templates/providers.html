@@ -18,7 +18,9 @@
             <input type="text" name="new_name" placeholder="Provider_new_Name"<br>
             <button type="submit">Update</button>
         </form>
-
+        {% for provider in provid_list %} 
+            <h3>{{provider[0]}}</h3>
+        {% endfor %}
         <p>
             <a href="/">Return to main</a>
         </p>

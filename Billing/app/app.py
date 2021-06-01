@@ -1,11 +1,12 @@
-from datetime import datetime
+import datetime
 from typing import List, Dict
-from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response,jsonify
+from flask import Flask, json,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response,jsonify
 from werkzeug.utils import secure_filename
 import mysql.connector
 from openpyxl import Workbook, load_workbook
 import os
 from openpyxl.worksheet import worksheet
+import json
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
@@ -24,23 +25,15 @@ app.config.update(
     SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/')
 
 
-	# GET /health x
-	# POST /provider x
-    # PUT /provider/{id} 	x
-	# POST /rates	
-	# GET /rates	
-	# POST /truck x
-	# PUT /truck{id} x
-    # GET /truck<id>?from=t1&to=t2 ????
-	# GET /bill	
-
-
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
 
 
 @app.route('/',methods=['GET'])
 def index():
+    global cnx,cursor
+    cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
+    cursor=cnx.cursor()
     return render_template('base.html')
 
 @app.route('/health',methods=['GET'])
@@ -49,12 +42,6 @@ def getHealth():
         return Response(status=500)
     return Response(status=200) 
 
-
-@app.route('/providers')
-def Providers():
-    cursor.execute('SElECT * FROM Providers')
-    results = (cursor.fetchall())
-    return render_template("providers.html",provid_list=results)
 
 @app.route('/rates', methods=['GET'])
 def getRate():
@@ -70,6 +57,12 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
     return render_template("getRates.html")
+
+@app.route('/providers')
+def Providers():
+    cursor.execute('SElECT provider_name FROM Providers')
+    results = (cursor.fetchall())
+    return render_template("providers.html",provid_list=results)
 
 @app.route('/updateProvider',methods=['POST'])
 def postProvider():
@@ -96,20 +89,25 @@ def addProvider():
 
 @app.route('/trucks')
 def Trucks():
-    cursor.execute('SElECT Trucks.id,provider_name,provider_id FROM Trucks JOIN Providers where Providers.id=Trucks.provider_id')
+    cursor.execute('SElECT id from Trucks')
     results = cursor.fetchall()
     return render_template("trucks.html",truck_list=results)
 
 @app.route('/updateTruck' ,methods=['post'])
 def updateTruck():
+    values=()
     id=request.form.get("id")
     prov=request.form.get("new_prov")
     cursor.execute('Select id from Providers where provider_name=%s',(prov,))
     results=cursor.fetchall()
-    values=()
+    if not results:
+        cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(prov,))
+        cnx.commit()
+        cursor.execute('Select id from Providers where provider_name=%s',(prov,))
+        results=cursor.fetchall()
+        return "added"
     for row in results:
-        values = (row[0],)
-    values = values + (id,)
+        values = values + (row[0],id)
     cursor.execute('UPDATE Trucks SET provider_id = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Trucks"))
@@ -134,11 +132,21 @@ def addTruck():
    return redirect(url_for("Trucks"))
    
    
-# @app.route('/getTruck',method=['post'])
-# def getTruck():
-#     id=request.form.get("id")
-#     t1=request.form.get("to")
-#     t2=request.form.get("from")
+@app.route('/getTruck/<id>')
+def getTruck(id):
+    x=datetime.datetime.now()
+    cursor.execute('select id from Trucks where id=%s',(id,))
+    results=cursor.fetchall()
+    t1=request.form.get("from")
+    t2=request.form.get("to")
+    if not results:
+        return "404 Truck not Found"
+    if not t1:
+        t1= datetime.datetime(x.year,x.month,1)
+    if not t2:
+        t2=x
+    return jsonify('id:',results[0][0],'from:',t1,'to:',t2)
+
     
 
    
