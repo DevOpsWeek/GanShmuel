@@ -1,4 +1,4 @@
-version: "2"
+version: "3.3"
 services:
   db:
     image: mysql:5.7
@@ -15,5 +15,6 @@ services:
       - db
     ports:
       - "5000:5000"
-    depends_on: 
+    depends_on:
       - db
+    restart: unless-stopped

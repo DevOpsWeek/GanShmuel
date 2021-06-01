@@ -52,10 +52,6 @@ def Providers():
     cursor.execute('SElECT * FROM Providers')
     results = (cursor.fetchall())
     return render_template("providers.html",provid_list=results)
-    check = cnx.is_connected()
-    if check is False:
-     return "500"
-    return "200"
 
 @app.route('/rates', methods=['GET'])
 def getRate():
