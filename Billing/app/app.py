@@ -95,14 +95,15 @@ def Trucks():
 
 @app.route('/updateTrucks' ,methods=['post'])
 def updateTruck():
-    truckid=request.form.get("id")
-    provid=request.form.get("new_prov_id")
-    sql='''#    if not len(results):
-#         cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(prov,))
-#         cnx.commit()
-#    else:UPDATE Trucks SET provider_id = %s WHERE id = %s'''
-    val=(provid,truckid)
-    cursor.execute(sql,val)
+    id=request.form.get("id")
+    prov=request.form.get("new_prov")
+    cursor.execute('Select id from Providers where provider_name=%s',(prov,))
+    results=cursor.fetchall()
+    values=()
+    for row in results:
+        values = (row[0],)
+    values = values + (id,)
+    cursor.execute('UPDATE Trucks SET provider_id = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Trucks"))
 
