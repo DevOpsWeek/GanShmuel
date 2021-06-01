@@ -21,15 +21,17 @@ def send_email(branch_name,sender,reciver,result,comitter):
         the result of the push are : \n{result}"
     server.sendmail(sender,reciver,massage)
     
+    
 
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
     try:
-        s = subprocess.check_output("docker ps -a | grep -o 'Db_container'", shell=True)
-        if s=="Db_container":
-            print("GOT THE S---------")
+        s = subprocess.check_output("docker ps -a | grep -o 'Db_cont'", shell=True)
+        s2=subprocess.check_output("docker ps -a | grep -o 'Db_cont2'", shell=True)
+        if s=="Db_cont" and branch_name=="Weight" or s2=="Db_cont2" and branch_name=="Billing":
+            print("GOT THE S/S2---------")
             return True
     except:
         pass
@@ -73,3 +75,4 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
+
