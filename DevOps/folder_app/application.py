@@ -13,6 +13,7 @@ os.chdir("GanShmuel")
 os.system("git checkout --track origin/Billing")
 os.system("git checkout --track origin/Weight")
 os.system("git checkout --track origin/DevOps")
+os.chdir("DevOps/folder_app")
 
 def send_email(branch_name,sender,reciver,result,comitter):
     massage=f"Hey ! Im the CI server \n\
