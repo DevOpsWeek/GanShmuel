@@ -1,14 +1,7 @@
 import datetime
-import time
-import requests
-import socket
-from typing import List, Dict
-from flask import Flask, json,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response,jsonify
-from werkzeug.utils import secure_filename
+from flask import Flask, json,request,render_template, redirect ,url_for, send_from_directory,Response
 import mysql.connector
-from openpyxl import Workbook, load_workbook
 import os
-from openpyxl.worksheet import worksheet
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
