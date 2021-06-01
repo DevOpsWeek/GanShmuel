@@ -1,17 +1,22 @@
 import requests
+import socket
 
 ##pip install -U requests
 ##pip install -U pytest pytest-html
 ##pip install -U jsonschema
 
-def test_index():
-     response = requests.get("http://www.google.com")
-     assert response.status_code == 200
+hostname = socket.gethostname()
+local_ip = socket.gethostbyname(hostname)
 
-def test_rates():
-     response = requests.get("http://www.kkkkaplan.com")
-     assert response.status_code == 200
+print("Hello,This is a script to test the Billing API")
+print(local_ip)
 
-def test_providers():
-     response = requests.get("http://www.kkkkaplan.com")
-     assert response.status_code == 200
+test = f"{'http://'}{local_ip}{':5000/'}"
+
+print(test)
+
+response = requests.get(test)
+if response.status_code == 200:
+     print("/rates: successfull <",response.status_code,">")
+elif response.status_code == 404:
+     print('/rates: Failed <404> ')
