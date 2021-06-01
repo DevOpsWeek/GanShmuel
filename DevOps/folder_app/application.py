@@ -8,7 +8,6 @@ server.starttls()
 server.login(email_dic['sender'],email_dic['password'])
 os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
 os.chdir("GanShmuel")
-os.system("pwd")
 os.system("git checkout --track origin/Billing")
 os.system("git checkout --track origin/Weight")
 os.system("git checkout --track origin/DevOps")
@@ -23,11 +22,18 @@ def send_email(branch_name,sender,reciver,result,comitter):
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
+    if branch_name=="Weight":
+        os.system("docker-compose --env-file ./.env.stg up")
+    elif branch_name=="Billing":
+        os.system("docker-compose --env-file ./.env.stg up")
+    elif branch_name=="DevOps":
+        os.system("docker-compose up -d")
+    #elif branch_name=="main":
     print(f"------- worked on branch {branch_name} -------")
     return True
 
 def run_docker(branch_name):
-    command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
+    command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"/app/GanShmuel/{branch_name}")
         run_result=create_docker_compose(command_list,branch_name)
@@ -65,4 +71,6 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080,  debug=True , use_reloader=False)
+
+
 
