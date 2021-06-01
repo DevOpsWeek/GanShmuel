@@ -103,6 +103,25 @@ table, th, td {
 			        {% endfor %}
 			    </tbody>
 			</table>
+			<br><br>
+											<table>
+			<thead>
+			    <tr>
+			        <th>Session</th>
+			        <th>Truck ID</th>
+					<th>DateTime</th>
+			    </tr>
+			    </thead>
+			    <tbody>
+			     {% for row in data3 %}
+			            <tr>
+			                <td>{{row[0]}}</td>
+			                <td>{{row[1]}}</td>
+							<td>{{row[2]}}</td>
+			            </tr>
+			        {% endfor %}
+			    </tbody>
+			</table>
 					</li>
 					<br>
 					<br>

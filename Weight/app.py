@@ -23,7 +23,8 @@ mysql.init_app(app)
 now = datetime.now()  # current date and time
 date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
 
-
+#conn = mysql.connect()
+#cursor = conn.cursor()
 
 @app.route("/", methods=["GET"])
 def index4():
@@ -95,8 +96,16 @@ def index():
     datacontainers = cursor.fetchall()
     cursor.execute('SELECT * FROM transactions')
     datatransactions = cursor.fetchall()
-    return render_template("db.html", data1=datacontainers, data2=datatransactions)
+    cursor.execute('SELECT * FROM sessions')
+    datasessions = cursor.fetchall()
+    return render_template("db.html", data1=datacontainers, data2=datatransactions, data3=datasessions)
 
+@app.route("/cleardb", methods=["GET"]) #SHOWS DATABASE
+def cleardb():
+    cursor.execute('DELETE FROM transactions')
+    cursor.execute('DELETE FROM containers_registered')
+    cursor.execute('DELETE FROM sessions')
+    return render_template("db.html")
 
 @app.route("/batch-weight", methods=["POST","GET"])
 def index2():
@@ -145,6 +154,7 @@ def weight_ftf():
     if containers is not None:
         contarr = containers.split(',')
         brutoarr = bruto.split(',')
+        brutoarrlbtokg = bruto.split(',')
         truckTararr = tare.split(',')
         netoarr = neto.split(',')
         print(contarr)
@@ -166,30 +176,29 @@ def weight_ftf():
             elif direction == 'none' and lastdir == 'in':
                 return "Truck direction can't be set to 'none' after having previously been set to 'in'"
             else:
-                cursor.execute('DELETE * FROM transactions WHERE ')
+                cursor.execute('DELETE * FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
         except:
             pass
-
         while x < len(contarr):
             if unit == 'lbs':
                 #kg to lbs ratio is 1:2.2 not 1:2, fix tomorrow (Jun 1 2021)
                 #known issues: If user inputs lbs into weight.html the value is still sent to transactions table as kg, fix tomorrow
-                #known issues: weight.html uploads to database only the first item from user input, fix tomorrow
-                #brutoarr[x] /= 2
-                pass
+                #known issues: weight.html uploads to database only the first item from user input, docker problem runs fine locally
+                brutoarrlbtokg[x] = int(float(brutoarr[x])/2.2)
             if direction == 'out':
-                cursor.execute('INSERT INTO transactions (datetime, direction, truck, containers, bruto, truckTara, neto, produce) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',(datetime.now(), direction, truck_id, contarr[x], brutoarr[x], truckTararr[x], netoarr[x], produce))
+                if x == 0:
+                    cursor.execute('UPDATE sessions SET datetime = %s WHERE truck = %s', (datetime.now(), truck_id))
+                cursor.execute('INSERT INTO transactions (datetime, direction, truck, containers, bruto, truckTara, neto, produce) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',(datetime.now(), direction, truck_id, contarr[x], brutoarrlbtokg[x], truckTararr[x], netoarr[x], produce))
                 cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)', (contarr[x], brutoarr[x], unit))
-                return redirect("/db")
             else:
                 cursor.execute(
                     'INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)',
-                    (datetime.now(), direction, truck_id, contarr[x], brutoarr[x], produce))
+                    (datetime.now(), direction, truck_id, contarr[x], brutoarrlbtokg[x], produce))
                 cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)',
-                               (contarr[x], brutoarr[x], unit))
-                return redirect("/db")
-
-            x += 1
+                    (contarr[x], brutoarr[x], unit))
+                if x == 0:
+                    cursor.execute('INSERT INTO sessions (truck, datetime) VALUES (%s, %s)', (truck_id, datetime.now()))
+            x = x + 1
     #don't forget to fill the form before submitting - V. Churikov
     print(direction,truck_id,containers,bruto,unit,produce,tare,neto,force)
     return render_template("weight.html")

@@ -40,10 +40,21 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10001 ;
 
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `session_id` int(12) NOT NULL AUTO_INCREMENT,
+  `truck` varchar(50) DEFAULT NULL,
+  `datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`session_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30001 ;
+
 show tables;
 
 describe containers_registered;
 describe transactions;
+describe sessions;
+
+
+
 
 
 
