@@ -130,7 +130,7 @@ def addTruck():
    return redirect(url_for("Trucks"))
    
    
-@app.route('/getTruck/<id>')
+@app.route('/getTruck/<id>?from=t1&to=t2')
 def getTruck(id):
     x=datetime.datetime.now()
     cursor.execute('select id from Trucks where id=%s',(id,))

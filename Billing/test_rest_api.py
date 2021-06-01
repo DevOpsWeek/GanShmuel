@@ -5,18 +5,17 @@ import socket
 ##pip install -U pytest pytest-html
 ##pip install -U jsonschema
 
+BILLING_PATHS = ["/","/health","/rates","/providers","/rates/download","/updateProvider","/addProvider","/trucks","/updateTrucks","/addTrucks","/bill"]
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
+test = f"{'http://'}{local_ip}{':5000'}"
 
 print("Hello,This is a script to test the Billing API")
-print(local_ip)
+print("Local ip:",local_ip)
 
-test = f"{'http://'}{local_ip}{':5000/'}"
-
-print(test)
-
-response = requests.get(test)
-if response.status_code == 200:
-     print("/rates: successfull <",response.status_code,">")
-elif response.status_code == 404:
-     print('/rates: Failed <404> ')
+for i in BILLING_PATHS:
+     response = requests.get(f"{test}{i}")
+     if response.status_code == 200:
+          print(f"{i}"": Successful <",response.status_code,">")
+     else:
+          print(f"{i}"": Failed <",response.status_code,">")
