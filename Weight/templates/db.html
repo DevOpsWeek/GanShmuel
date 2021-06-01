@@ -52,8 +52,40 @@ table, th, td {
 			</div>
 			<div>
 				<ul class="blog">
-					<li>
+				<h3>Transactions:</h3><br>
 			<table>
+			<thead>
+			    <tr>
+			        <th>ID</th>
+			        <th>DateTime</th>
+			        <th>Direction</th>
+			        <th>Truck</th>
+			        <th>Containers</th>
+			        <th>Bruto</th>
+			        <th>Truck Tare</th>
+			        <th>Neto</th>
+			        <th>Produce</th>
+			    </tr>
+			    </thead>    
+			    <tbody>
+			     {% for row in data2 %}    
+			            <tr>
+			                <td>{{row[0]}}</td>
+			                <td>{{row[1]}}</td>
+			                <td>{{row[2]}}</td>
+			                <td>{{row[3]}}</td>
+			                <td>{{row[4]}}</td>
+			                <td>{{row[5]}}</td>
+			                <td>{{row[6]}}</td>
+			                <td>{{row[7]}}</td>
+			                <td>{{row[8]}}</td>
+			            </tr>
+			        {% endfor %}
+			    </tbody>
+			</table>
+			<br><br>
+			<h3>Containers:</h3><br>
+						<table>
 			<thead>
 			    <tr>
 			        <th>Container ID</th>
@@ -62,7 +94,7 @@ table, th, td {
 			    </tr>
 			    </thead>    
 			    <tbody>
-			     {% for row in data %}    
+			     {% for row in data1 %}    
 			            <tr>
 			                <td>{{row[0]}}</td>
 			                <td>{{row[1]}}</td>

@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, render_template, request, redirect, Response
-import logging
 from datetime import datetime
 from flaskext.mysql import MySQL
 import pandas
@@ -38,7 +37,7 @@ def index4():
 @app.route("/health", methods=["GET"])
 def health():
     try:
-        cursor.execute("SELEC 1")
+        cursor.execute("SELECT 1")
         return Response(status=200)
         #return '<h1>Status Code: 200.</h1>'
     except:
@@ -93,8 +92,10 @@ def parse(filePath):
 @app.route("/db", methods=["GET"]) #SHOWS DATABASE
 def index():
     cursor.execute('SELECT * FROM containers_registered')
-    data = cursor.fetchall()
-    return render_template("unknown.html", data=data)
+    datacontainers = cursor.fetchall()
+    cursor.execute('SELECT * FROM transactions')
+    datatransactions = cursor.fetchall()
+    return render_template("db.html", data1=datacontainers, data2=datatransactions)
 
 
 @app.route("/batch-weight", methods=["POST","GET"])
@@ -130,7 +131,67 @@ def index5():
     return render_template("unknown.html", data=data)
 
 @app.route("/weight", methods=["POST", "GET"])
-def index6():
+def weight_ftf():
+    rqfm = request.form
+    direction = rqfm.get('dir')
+    truck_id = rqfm.get('truck')
+    containers = rqfm.get('containers')
+    bruto = rqfm.get('weight')
+    unit = rqfm.get('unit')
+    produce = rqfm.get('produce')
+    tare = rqfm.get('tare')
+    neto = rqfm.get('neto')
+    force = rqfm.get('ifmale')
+    if containers is not None:
+        contarr = containers.split(',')
+        brutoarr = bruto.split(',')
+        truckTararr = tare.split(',')
+        netoarr = neto.split(',')
+        print(contarr)
+        x=0
+        try:
+            cursor.execute(
+            'SELECT DISTINCT datetime FROM transactions IN (SELECT MAX(datetime) FROM transactions WHERE truck = %s)',
+            truck_id)
+            lasttime = cursor.fetchall()
+            cursor.execute('SELECT DISTINCT direction FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+            lastdir = cursor.fetchall()
+            if direction == lastdir and direction != 'none':
+                if force == False:
+                    return "Truck direction can't be set to the same direction as last time when not in force mode, use force to overwrite"
+                else:
+                    cursor.execute('DELETE * FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+            elif direction == 'out' and lastdir != 'in':
+                return "Truck direction can't be set to 'out' without having previously been set to 'in'"
+            elif direction == 'none' and lastdir == 'in':
+                return "Truck direction can't be set to 'none' after having previously been set to 'in'"
+            else:
+                cursor.execute('DELETE * FROM transactions WHERE ')
+        except:
+            pass
+
+        while x < len(contarr):
+            if unit == 'lbs':
+                #kg to lbs ratio is 1:2.2 not 1:2, fix tomorrow (Jun 1 2021)
+                #known issues: If user inputs lbs into weight.html the value is still sent to transactions table as kg, fix tomorrow
+                #known issues: weight.html uploads to database only the first item from user input, fix tomorrow
+                #brutoarr[x] /= 2
+                pass
+            if direction == 'out':
+                cursor.execute('INSERT INTO transactions (datetime, direction, truck, containers, bruto, truckTara, neto, produce) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',(datetime.now(), direction, truck_id, contarr[x], brutoarr[x], truckTararr[x], netoarr[x], produce))
+                cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)', (contarr[x], brutoarr[x], unit))
+                return redirect("/db")
+            else:
+                cursor.execute(
+                    'INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)',
+                    (datetime.now(), direction, truck_id, contarr[x], brutoarr[x], produce))
+                cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)',
+                               (contarr[x], brutoarr[x], unit))
+                return redirect("/db")
+
+            x += 1
+    #don't forget to fill the form before submitting - V. Churikov
+    print(direction,truck_id,containers,bruto,unit,produce,tare,neto,force)
     return render_template("weight.html")
 
 @app.route("/session", methods=["POST", "GET"])

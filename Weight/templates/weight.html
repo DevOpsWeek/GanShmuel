@@ -49,31 +49,33 @@
     <form method="POST" action="">
 			  <H1>Weight</H1> <br>
 
-            <label for="dir">direction:in/out/none</label>
+            <label for="dir">Direction: in / out / none </label>
             <select name="dir" id="dir">
                 <option value="none">None</option>
                 <option value="in">In</option>
                 <option value="out">Out</option>
             </select><br><br>
-            Containers<input type="text" name="containers" /> <br>(use comma and no spaces) <br><br>            
-            Weight <input type="text" name="weight" /> <br><br>
+            
+            Truck ID: <br><input type="text" name="truck" id="truck" /> <br><br> 
+            Containers: <input type="text" name="containers" id="truck" /> <br>(use comma and no spaces) <br><br>            
+            Gross weight (bruto): <br><input type="text" name="weight" id="weight" /> <br><br>
             
             <label for="unit">Choose unit:</label>
 
             <select name="unit" id="unit">
-                <option value="kg">KG</option>
-                <option value="lbs">LBS</option>
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
             </select> <br><br>
-
-        
-         
             
-
-            Produce ID<input type="text" name="produce" /> <br><br>
+            Produce ID: <input type="text" name="produce" /> <br>id of produce, e.g. "orange", "tomato", or "na" if empty<br><br>
+            <b>Leave blank if direction isn't 'out':</b>
+            <br><br>
+            Truck tare weight (kg): <input type="text" name="tare" id="tare" /> <br><br>
+            Net weight (kg): <input type="text" name="neto" id="neto"/> <br><br>
             
 			
     Force: <br>
-        <input checked="checked" type="radio" id="male" name="gender" value="male">
+        <input checked="checked" type="radio" id="ifmale" name="gender" value="male">
 	<label for="male">False</label><br>
 	<input  type="radio" id="female" name="gender" value="female">
 	<label for="female">True</label><br>
