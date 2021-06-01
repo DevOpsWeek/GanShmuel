@@ -13,7 +13,6 @@ os.chdir("GanShmuel")
 os.system("git checkout --track origin/Billing")
 os.system("git checkout --track origin/Weight")
 os.system("git checkout --track origin/DevOps")
-os.chdir("DevOps/folder_app")
 
 def send_email(branch_name,sender,reciver,result,comitter):
     massage=f"Hey ! Im the CI server \n\
@@ -25,7 +24,10 @@ def send_email(branch_name,sender,reciver,result,comitter):
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
-    s = subprocess.check_output("docker ps -a | grep -o 'Db_container'", shell=True)
+    try:
+        s = subprocess.check_output("docker ps -a | grep -o 'Db_container'", shell=True)
+    except:
+        pass
     print("GOT THE S---------")
     print(f"------- worked on branch {branch_name} -------")
     if s=="Db_container":
