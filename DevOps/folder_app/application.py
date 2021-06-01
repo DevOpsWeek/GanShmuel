@@ -9,9 +9,11 @@ server=smtplib.SMTP('smtp.gmail.com',587)
 server.starttls()
 server.login(email_dic['sender'],email_dic['password'])
 os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
-os.system("git checkout --track origin/DevOps")
+os.chdir("GanShmuel")
 os.system("git checkout --track origin/Billing")
 os.system("git checkout --track origin/Weight")
+os.system("git checkout --track origin/DevOps")
+os.chdir("DevOps/folder_app")
 
 def send_email(branch_name,sender,reciver,result,comitter):
     massage=f"Hey ! Im the CI server \n\
@@ -23,13 +25,12 @@ def send_email(branch_name,sender,reciver,result,comitter):
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
-    s = subprocess.check_output("docker ps -a |grep -o 'Db_container'", shell=True)
+    s = subprocess.check_output("docker ps -a | grep -o 'Db_container'", shell=True)
     print("GOT THE S---------")
     print(f"------- worked on branch {branch_name} -------")
     if s=="Db_container":
         return True
-    else 
-        return False
+    return False
 
 def run_docker(branch_name):
     os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
@@ -38,11 +39,10 @@ def run_docker(branch_name):
         os.chdir(f"GanShmuel/{branch_name}")
         run_result=create_docker_compose(command_list,branch_name)
         print(run_result)  
-        try:
-            if run_result==True:
+        if run_result==True:
                 print("exucuted the docker compose file ! ")
                 return "exucuted the docker compose file ! "
-        except:
+        else:
             print("couldnt run your docker-cmpose file ------------- ABORT  -----------")
             return "couldnt run your docker-cmpose file ------------- ABORT  -----------"
     else:
@@ -71,4 +71,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
-
