@@ -8,21 +8,14 @@ email_dic={"sender":"devweek.ci.mails@gmail.com","rec_billing":["david45453@gmai
 server=smtplib.SMTP('smtp.gmail.com',587)
 server.starttls()
 server.login(email_dic['sender'],email_dic['password'])
-os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
-os.chdir("GanShmuel")
-os.system("git checkout --track origin/Billing")
-os.system("git checkout --track origin/Weight")
-os.system("git checkout --track origin/DevOps")
-os.chdir("DevOps/folder_app")
+subprocess.call("firstclone.sh")
 
 def send_email(branch_name,sender,reciver,result,comitter):
     massage=f"Hey ! Im the CI server \n\
         i noticed a new push to {branch_name} branch whice was comitted by {comitter}\n\
         the result of the push are : \n{result}"
     server.sendmail(sender,reciver,massage)
-    
-
-
+  
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
@@ -75,4 +68,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
-
