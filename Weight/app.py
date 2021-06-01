@@ -2,9 +2,8 @@ from flask import Flask, jsonify, render_template, request, redirect, Response, 
 from datetime import datetime, date
 from flaskext.mysql import MySQL
 import pandas
+import numpy
 import os
-
-
 
 app = Flask(__name__)
 
@@ -25,6 +24,15 @@ date_time = now.strftime("%d/%m/%Y, %H:%M:%S")
 
 #conn = mysql.connect()
 #cursor = conn.cursor()
+
+def listmatx(arr, arg):
+    list_1 = []
+    for i in range(arr.shape[0]):
+        j = 0
+        for a in arg.split(','):
+            list_1.append((a + ':'+str(arr[int(i)][int(j)])))
+            j += 1
+    return list_1
 
 @app.route("/", methods=["GET"])
 def index4():
@@ -192,7 +200,7 @@ def weight_ftf():
     produce = rqfm.get('produce')
     tare = rqfm.get('tare')
     neto = rqfm.get('neto')
-    force = rqfm.get('ifmale')
+    force = rqfm.get('gender')
     if containers is not None:
         contarr = containers.split(',')
         brutoarr = bruto.split(',')
@@ -202,37 +210,63 @@ def weight_ftf():
         print(contarr)
         x=0
         try:
-            cursor.execute(
-            'SELECT DISTINCT datetime FROM transactions IN (SELECT MAX(datetime) FROM transactions WHERE truck = %s)',
-            truck_id)
+            cursor.execute('SELECT MAX(datetime) FROM transactions WHERE truck = %s GROUP BY truck', truck_id)
             lasttime = cursor.fetchall()
+            lasttime = str(lasttime).split('(')
+            lasttime = str(lasttime).split(',')
+            lasttime = str(lasttime).replace('\"', '')
+            lasttime = str(lasttime).replace('\'', '')
+            lasttime = str(lasttime).replace(" ", "")
+            lasttime = str(lasttime).split(',')
+            lasttime = str(lasttime[3])+'-'+str(lasttime[4])+'-'+str(lasttime[5])+' '+str(lasttime[6])+':'+str(lasttime[7])+':'+str(lasttime[8])
+            lasttime = str(lasttime).replace(')','')
+            lasttime = datetime.strptime(str(lasttime), '%Y-%m-%d %H:%M:%S')
             cursor.execute('SELECT DISTINCT direction FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
             lastdir = cursor.fetchall()
+            if 'in' in str(lastdir):
+                lastdir = 'in'
+            elif 'out' in str(lastdir):
+                lastdir = 'out'
+            elif 'none' in str(lastdir):
+                lastdir = 'none'
             if direction == lastdir and direction != 'none':
-                if force == False:
+                print(str(force))
+                if str(force) == 'male':
                     return "Truck direction can't be set to the same direction as last time when not in force mode, use force to overwrite"
                 else:
-                    cursor.execute('DELETE * FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                    cursor.execute('DELETE FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                    cursor.execute('DELETE FROM containers_registered WHERE container_id = %s', contarr[x])
             elif direction == 'out' and lastdir != 'in':
                 return "Truck direction can't be set to 'out' without having previously been set to 'in'"
             elif direction == 'none' and lastdir == 'in':
                 return "Truck direction can't be set to 'none' after having previously been set to 'in'"
-            else:
-                cursor.execute('DELETE * FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
         except:
             pass
         while x < len(contarr):
             if unit == 'lbs':
-                #kg to lbs ratio is 1:2.2 not 1:2, fix tomorrow (Jun 1 2021)
-                #known issues: If user inputs lbs into weight.html the value is still sent to transactions table as kg, fix tomorrow
-                #known issues: weight.html uploads to database only the first item from user input, docker problem runs fine locally
                 brutoarrlbtokg[x] = int(float(brutoarr[x])/2.2)
             if direction == 'out':
-                if x == 0:
-                    cursor.execute('UPDATE sessions SET datetime = %s WHERE truck = %s', (datetime.now(), truck_id))
+                cursor.execute('UPDATE sessions SET datetime = %s WHERE truck = %s', (datetime.now(), truck_id))
+                try:
+                    cursor.execute('DELETE FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                except:
+                    pass
+                try:
+                    cursor.execute('DELETE FROM containers_registered WHERE container_id = %s', contarr[x])
+                except:
+                    pass
                 cursor.execute('INSERT INTO transactions (datetime, direction, truck, containers, bruto, truckTara, neto, produce) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',(datetime.now(), direction, truck_id, contarr[x], brutoarrlbtokg[x], truckTararr[x], netoarr[x], produce))
                 cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)', (contarr[x], brutoarr[x], unit))
+
             else:
+                try:
+                    cursor.execute('DELETE FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                except:
+                    pass
+                try:
+                    cursor.execute('DELETE FROM containers_registered WHERE container_id = %s', contarr[x])
+                except:
+                    pass
                 cursor.execute(
                     'INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)',
                     (datetime.now(), direction, truck_id, contarr[x], brutoarrlbtokg[x], produce))
@@ -245,9 +279,41 @@ def weight_ftf():
     print(direction,truck_id,containers,bruto,unit,produce,tare,neto,force)
     return render_template("weight.html")
 
-@app.route("/session", methods=["POST", "GET"])
-def index7():
-    return render_template("session.html")
+@app.route("/session/<id>", methods=["POST", "GET"])
+def index7(id):
+    requrl = request.url
+    requrl = requrl.split('/')
+    requrl = requrl[(len(requrl)-1)]
+    sesid = requrl
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute('SELECT DISTINCT transactions.direction FROM transactions, sessions WHERE transactions.truck = sessions.truck AND sessions.session_id = %s', sesid)
+    directions = str(cursor.fetchall())
+    if 'in' in directions:
+        directions = 'in'
+    elif 'out' in directions:
+        directions = 'out'
+    elif 'none' in directions:
+        directions = 'none'
+    print(directions)
+    if directions == "out":
+        query = "SELECT transactions.id, transactions.bruto, transactions.neto, sessions.truck FROM transactions join sessions on transactions.truck = sessions.truck WHERE (sessions.session_id='{}')".format(id)
+        cursor.execute(query)
+        conn.commit()
+        res = cursor.fetchall()
+        cursor.close()
+        args = numpy.array(res)
+        return jsonify(listmatx(args,'id,trucks id,bruto ,neto,truck weight'))
+    if directions == 'in' or diections =='none':
+        query = "SELECT transactions.id , transactions.bruto , sessions.truck FROM transactions join sessions on transactions.truck =sessions.truck WHERE (sessions.session_id='{}')".format(id)
+        cursor.execute(query)
+        conn.commit()
+        res = cursor.fetchall()
+        cursor.close()
+        args = numpy.array(res)
+        return jsonify(listmatx(args,'id,trucks id,bruto'))
+    #return render_template("session.html")
+    return jsonify(directions)
 
 @app.route("/item", methods=["POST", "GET"])
 def index8():
