@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `Providers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `provider_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  AUTO_INCREMENT=10001 ;
+) ENGINE=MyISAM  AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `Rates` (
   `product_id` varchar(50) NOT NULL,

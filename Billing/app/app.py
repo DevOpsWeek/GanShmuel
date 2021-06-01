@@ -1,5 +1,6 @@
+from datetime import datetime
 from typing import List, Dict
-from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response
+from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response,jsonify
 from werkzeug.utils import secure_filename
 import mysql.connector
 from openpyxl import Workbook, load_workbook
@@ -10,7 +11,9 @@ UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
 
-
+def allowed_file(filename): #made for the rates POST so that uploaded files must be .xlsx files 
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -64,66 +67,82 @@ def downloadRates():
 @app.route('/rates', methods=['POST'])
 def upload_file():
     file = request.files["file"]
-    file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
+    if file and allowed_file(file.filename):
+        file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
     return render_template("getRates.html")
     
-
-@app.route("/postTruck", methods=['POST'])
-def getTrucks():
-    pass
-
-# @app.route("/putTruck", methods=["PUT"])
-# def putTruck():
-#     return "truck"
+@app.route('/providers')
+def Providers():
+    return render_template("providers.html")
 
 @app.route('/updateProvider',methods=['POST'])
 def postProvider():
-    prov_name=request.form.get("new_name")
-    id=request.form.get("id")
-    sql='''UPDATE Providers SET provider_name = %s WHERE id = %s'''
-    val=(prov_name,id)
-    cursor.execute(sql,val)
+    new_name=request.form.get("new_name")
+    old_name=request.form.get("old_name")
+    cursor.execute('select provider_name,id from Providers where provider_name=%s',(old_name,))
+    values=(new_name,)
+    results=cursor.fetchall()
+    for row in results:
+        values=values + (row[1],)
+    cursor.execute('UPDATE Providers SET provider_name = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Providers"))
 
 @app.route('/addProvider',methods=['POST'])
 def addProvider():
-   prov_name=request.form.get("prov_name")
-   id=request.form.get("id")
-   sql='''INSERT INTO Providers(id,provider_name) VALUES (%s,%s)'''
-   val =(id ,prov_name)
-   cursor.execute(sql,val)
+   new_name=request.form.get("new_name")
+   cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(new_name,))
    cnx.commit()
-   return redirect(url_for("Providers"))
+   cursor.execute('Select id from Providers where provider_name=%s',(new_name,))
+   results=cursor.fetchall()
+   return jsonify(results[0])
+
 
 @app.route('/trucks')
 def Trucks():
-    cursor.execute('SElECT * FROM Trucks')
+    cursor.execute('SElECT Trucks.id,provider_name,provider_id FROM Trucks JOIN Providers where Providers.id=Trucks.provider_id')
     results = cursor.fetchall()
     return render_template("trucks.html",truck_list=results)
 
-
-
-@app.route('/updateTrucks' ,methods=['post'])
+@app.route('/updateTruck' ,methods=['post'])
 def updateTruck():
-    truckid=request.form.get("id")
-    provid=request.form.get("new_prov_id")
-    sql='''UPDATE Trucks SET provider_id = %s WHERE id = %s'''
-    val=(provid,truckid)
-    cursor.execute(sql,val)
+    id=request.form.get("id")
+    prov=request.form.get("new_prov")
+    cursor.execute('Select id from Providers where provider_name=%s',(prov,))
+    results=cursor.fetchall()
+    values=()
+    for row in results:
+        values = (row[0],)
+    values = values + (id,)
+    cursor.execute('UPDATE Trucks SET provider_id = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Trucks"))
 
 
-@app.route('/addTrucks', methods=['POST'])
+@app.route('/addTruck', methods=['POST'])
 def addTruck():
-   truckid=request.form.get("id")
-   provid=request.form.get("prov_id")
-   sql='''INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)'''
-   val =(truckid,provid)
-   cursor.execute(sql,val)
+   id=request.form.get("id")
+   prov=request.form.get("prov_name")
+   values =(id,)
+   cursor.execute('Select id from Providers where provider_name=%s',(prov,))
+   results=cursor.fetchall()
+   if not results:
+        cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(prov,))
+        cnx.commit()
+   for row in results:
+        values=values+(row[0],)
+   cursor.execute('INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)',values)
    cnx.commit()
    return redirect(url_for("Trucks"))
+   
+   
+# @app.route('/getTruck',method=['post'])
+# def getTruck():
+#     id=request.form.get("id")
+#     t1=request.form.get("to")
+#     t2=request.form.get("from")
+    
+
    
 @app.route('/bill', methods=["GET"])
 def getBill():
