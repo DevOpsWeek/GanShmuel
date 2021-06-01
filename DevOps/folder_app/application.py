@@ -8,6 +8,7 @@ server.starttls()
 server.login(email_dic['sender'],email_dic['password'])
 os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
 os.chdir("GanShmuel")
+os.system("pwd")
 os.system("git checkout --track origin/Billing")
 os.system("git checkout --track origin/Weight")
 os.system("git checkout --track origin/DevOps")
@@ -26,11 +27,9 @@ def create_docker_compose(command_list,branch_name):
     return True
 
 def run_docker(branch_name):
-    command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
+    command_list=[f"git checkout {branch_name}","docker-compose down","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"/app/GanShmuel/{branch_name}")
-        os.system("pwd")
-        os.system("ls")
         run_result=create_docker_compose(command_list,branch_name)
         print(run_result)  
         if run_result==True:
@@ -65,4 +64,5 @@ def webhook():
     return respone
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True, threaded=False)
+    app.run(host='0.0.0.0', port=8080,  debug=True , use_reloader=False)
+
