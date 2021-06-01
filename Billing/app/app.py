@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Dict
 from flask import Flask,request,render_template, flash, redirect ,url_for, send_from_directory, send_file,Response,jsonify
 from werkzeug.utils import secure_filename
@@ -93,7 +94,7 @@ def Trucks():
     results = cursor.fetchall()
     return render_template("trucks.html",truck_list=results)
 
-@app.route('/updateTrucks' ,methods=['post'])
+@app.route('/updateTruck' ,methods=['post'])
 def updateTruck():
     id=request.form.get("id")
     prov=request.form.get("new_prov")
@@ -108,7 +109,7 @@ def updateTruck():
     return redirect(url_for("Trucks"))
 
 
-@app.route('/addTrucks', methods=['POST'])
+@app.route('/addTruck', methods=['POST'])
 def addTruck():
    id=request.form.get("id")
    prov=request.form.get("prov_name")
@@ -124,6 +125,13 @@ def addTruck():
    cnx.commit()
    return redirect(url_for("Trucks"))
    
+   
+# @app.route('/getTruck',method=['post'])
+# def getTruck():
+#     id=request.form.get("id")
+#     t1=request.form.get("to")
+#     t2=request.form.get("from")
+    
 
    
 @app.route('/bill', methods=["GET"])
