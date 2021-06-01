@@ -85,17 +85,18 @@ def postProvider():
 @app.route('/addProvider',methods=['POST'])
 def addProvider():
    new_name=request.form.get("new_name")
-   id=request.form.get("id")
-   insert='''INSERT INTO Providers(id,provider_name) VALUES (%s,%s)'''
-   val =(id,new_name)
-   cursor.execute(insert,val)
+#    id=request.form.get("id")
+#    insert='''INSERT INTO Providers(provider_name) VALUES (%s)'''
+   val =(new_name)
+   cursor.execute('INsERT INTO Providers(provider_name) VALUES (%s)',val)
    cnx.commit()
+   
    return jsonify(id)
 
 
 @app.route('/trucks')
 def Trucks():
-    cursor.execute('SElECT * FROM Trucks')
+    cursor.execute('SElECT Trucks.id,provider_name,provider_id FROM Trucks JOIN Providers where Providers.id=Trucks.provider_id')
     results = cursor.fetchall()
     return render_template("trucks.html",truck_list=results)
 

@@ -15,7 +15,7 @@
         </form>
         
            {% for truck in truck_list %}
-            <h3>{{ truck[0] }} | {{ truck[1] }}</h3>
+            <h3>{{ truck[0] }} | {{ truck[1] }} | {{truck[2]}}</h3>
             {%endfor%}
             
         <form action="/updateTrucks" method="post">
