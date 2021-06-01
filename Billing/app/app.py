@@ -82,7 +82,8 @@ def addProvider():
    cnx.commit()
    cursor.execute('Select id from Providers where provider_name=%s',(new_name,))
    results=cursor.fetchall()
-   return jsonify('id:',results[0][0])
+   id={"id":results[0][0]}
+   return json.dumps(id)
 
 
 @app.route('/trucks')
@@ -142,17 +143,33 @@ def getTruck(id):
         t1= datetime.datetime(x.year,x.month,1)
     if not t2:
         t2=x
-    
-    # response = requests.post(url="http://0.0.0.0:5000/session/<id>",)
-    return jsonify('id:',results[0][0],'from:',t1,'to:',t2)
+    # response = [json.load(requests.post(url="http://0.0.0.0:5000/item/<id>?from=t1&to=t2")]????
+    #add to get dict "session":response[0][tara]
+    get={"id":results[0][0],"from":t1,"to":t2}
+    return json.dumps(get)
 
     
 
    
-@app.route('/bill<id>', methods=["GET"])
-def getBill():
-    pass
-   
+@app.route('/bill/<id>', methods=["GET"])
+def getBill(id):
+    x=datetime.datetime.now()
+    cursor.execute('select id,provider_name from Providers where id=%s',(id,))
+    results=cursor.fetchall()
+    t1=request.form.get("from")
+    t2=request.form.get("to")
+    if not results:
+        return Response(status=404)
+    if not t1:
+        t1= datetime.datetime(x.year,x.month,1)
+    if not t2:
+        t2=x
+    #truckCount ???
+    #sessionCount ???
+    products =[] #need to build from api and xl reading ???? 
+    bill={"id":results[0][0],"name":results[0][1],"from":t1,"to":t2}
+    # return json.dumps(bill)
+    return render_template('bill.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
