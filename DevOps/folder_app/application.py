@@ -29,6 +29,8 @@ def run_docker(branch_name):
     command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
     if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
         os.chdir(f"/app/GanShmuel/{branch_name}")
+        os.system("pwd")
+        os.system("ls")
         run_result=create_docker_compose(command_list,branch_name)
         print(run_result)  
         if run_result==True:
