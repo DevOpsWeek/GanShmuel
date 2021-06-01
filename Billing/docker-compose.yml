@@ -15,6 +15,6 @@ services:
       - db
     ports:
       - "5000:5000"
-    depends_on: 
+    depends_on:
       - db
-
+    restart: unless-stopped

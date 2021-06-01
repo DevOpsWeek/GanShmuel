@@ -49,6 +49,13 @@ def getHealth():
         return Response(status=500)
     return Response(status=200) 
 
+
+@app.route('/providers')
+def Providers():
+    cursor.execute('SElECT * FROM Providers')
+    results = (cursor.fetchall())
+    return render_template("providers.html",provid_list=results)
+
 @app.route('/rates', methods=['GET'])
 def getRate():
     return render_template("getRates.html")
@@ -63,10 +70,6 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
     return render_template("getRates.html")
-    
-@app.route('/providers')
-def Providers():
-    return render_template("providers.html")
 
 @app.route('/updateProvider',methods=['POST'])
 def postProvider():
