@@ -1,5 +1,5 @@
-from flask import Flask, jsonify, render_template, request, redirect, Response
-from datetime import datetime
+from flask import Flask, jsonify, render_template, request, redirect, Response, url_for
+from datetime import datetime, date
 from flaskext.mysql import MySQL
 import pandas
 import os
@@ -138,6 +138,48 @@ def index5():
     cursor.execute('SELECT * FROM containers_registered WHERE weight=0')
     data = cursor.fetchall()
     return render_template("unknown.html", data=data)
+    
+@app.route("/getweight", methods=["POST", "GET"])
+def getweight():
+    if request.method == "POST":
+        t1 = request.form.get('t1')
+        t2 = request.form.get('t2')
+        f3 = request.form.get('f')
+        session = request.form.get('ses')
+        if t1 == '':
+            t1 = datetime.combine(date.today(), datetime.min.time())
+        if t2 == '':
+            t2 = datetime.now()
+        if f3 == '':
+            f3 = 'in,out,none'
+        return redirect((url_for('getweight', t1=t1, t2=t2, f=f3, ses=session)))
+    rqfm = request.form
+    t1 = rqfm.get('from')
+    t2 = rqfm.get('to')
+    f3 = rqfm.get('f')
+    session = rqfm.get('ses')
+    if t1 == '':
+        t1 = datetime.combine(date.today(), datetime.min.time())
+    if t2 == '':
+        t2 = datetime.now()
+    args = request.args
+    if 't1' in args and 't2' and 'f' and 'ses'in args:
+        fromqs = args.get('t1')
+        toqs = args.get('t2')
+        myfilter = args.get('f')
+        myfilter = myfilter.split(',')
+        session = args.get('ses')
+        print(session)
+        if len(myfilter) == 1:
+            cursor.execute('SELECT sessions.session_id, transactions.direction, transactions.bruto, transactions.neto, transactions.produce, transactions.containers FROM transactions, sessions WHERE ((sessions.datetime > %s AND sessions.datetime < %s) AND transactions.direction = %s) AND sessions.session_id = %s', (fromqs,toqs,myfilter[0],session))
+        elif len(myfilter) == 2:
+            cursor.execute('SELECT sessions.session_id, transactions.direction, transactions.bruto, transactions.neto, transactions.produce, transactions.containers FROM transactions, sessions WHERE ((sessions.datetime > %s AND sessions.datetime < %s) AND transactions.direction = %s OR transactions.direction = %s) AND sessions.session_id = %s', (fromqs,toqs,myfilter[0],myfilter[1],session))
+        elif len(myfilter) >= 3:
+            cursor.execute('SELECT sessions.session_id, transactions.direction, transactions.bruto, transactions.neto, transactions.produce, transactions.containers FROM transactions, sessions WHERE ((sessions.datetime > %s AND sessions.datetime < %s) AND transactions.direction = %s OR transactions.direction = %s OR transactions.direction = %s) AND sessions.session_id = %s', (fromqs,toqs,myfilter[0],myfilter[1],myfilter[2], session))
+        else:
+            cursor.execute('SELECT sessions.session_id, transactions.direction, transactions.bruto, transactions.neto, transactions.produce, transactions.containers FROM transactions, sessions WHERE sessions.datetime > %s AND sessions.datetime < %s', (fromqs,toqs))
+        return jsonify(cursor.fetchall())
+    return render_template('getweight.html')
 
 @app.route("/weight", methods=["POST", "GET"])
 def weight_ftf():
