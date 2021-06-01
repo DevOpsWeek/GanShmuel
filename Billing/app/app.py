@@ -35,8 +35,8 @@ app.config.update(
 	# GET /bill	
 
 
-cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
-cursor=cnx.cursor()
+cnx = mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
+cursor = cnx.cursor()
 
 
 @app.route('/',methods=['GET'])
