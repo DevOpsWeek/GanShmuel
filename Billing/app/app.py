@@ -125,6 +125,8 @@ def addTruck():
    if not results:
         cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(prov,))
         cnx.commit()
+        cursor.execute('Select id from Providers where provider_name=%s',(prov,))
+        results=cursor.fetchall()
    for row in results:
         values=values+(row[0],)
    cursor.execute('INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)',values)
