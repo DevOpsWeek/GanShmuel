@@ -10,7 +10,9 @@ UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
 
-
+def allowed_file(filename): #made for the rates POST so that uploaded files must be .xlsx files 
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -68,7 +70,8 @@ def downloadRates():
 @app.route('/rates', methods=['POST'])
 def upload_file():
     file = request.files["file"]
-    file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
+    if file and allowed_file(file.filename):
+        file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
     return render_template("getRates.html")
     
 
