@@ -70,10 +70,6 @@ def upload_file():
     if file and allowed_file(file.filename):
         file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
     return render_template("getRates.html")
-    
-@app.route('/providers')
-def Providers():
-    return render_template("providers.html")
 
 @app.route('/updateProvider',methods=['POST'])
 def postProvider():
