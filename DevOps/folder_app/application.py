@@ -1,14 +1,17 @@
 import json,os,subprocess,smtplib
 from flask import Flask, request
 
-app = Flask(__name__)
 email_dic={"sender":"devweek.ci.mails@gmail.com","rec_billing":["david45453@gmail.com","12345angela54@gmail.com"],\
             "rec_weight":["koren.shoshan@gmail.com","12345angela54@gmail.com"],"rec_devops":"12345angela54@gmail.com","password":"A159753a!"}
-         
 server=smtplib.SMTP('smtp.gmail.com',587)
 server.starttls()
 server.login(email_dic['sender'],email_dic['password'])
-subprocess.call("firstclone.sh")
+os.system("git clone https://github.com/DevOpsWeek/GanShmuel.git")
+os.chdir("GanShmuel")
+os.system("git checkout --track origin/Billing")
+os.system("git checkout --track origin/Weight")
+os.system("git checkout --track origin/DevOps")
+os.chdir("DevOps/folder_app")
 
 def send_email(branch_name,sender,reciver,result,comitter):
     massage=f"Hey ! Im the CI server \n\
@@ -20,15 +23,7 @@ def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     print(f"------- worked on branch {branch_name} -------")
-    try:
-        s = subprocess.check_output("docker ps -a | grep -o 'Db_cont'", shell=True)
-        s2=subprocess.check_output("docker ps -a | grep -o 'Db_cont2'", shell=True)
-        if s=="Db_cont" and branch_name=="Weight" or s2=="Db_cont2" and branch_name=="Billing":
-            print("GOT THE S/S2---------")
-            return True
-    except:
-        pass
-    return False
+    return True
 
 def run_docker(branch_name):
     command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down","docker-compose up -d"]
@@ -46,6 +41,7 @@ def run_docker(branch_name):
         print("DIDNT GET ANY VALID BRANCH NAME ! ------------- ABORT  -----------")
         return "DIDNT GET ANY VALID BRANCH NAME ! ------------- ABORT  -----------"
 
+app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     json_str=request.json
