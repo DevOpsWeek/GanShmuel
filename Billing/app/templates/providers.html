@@ -12,12 +12,9 @@
             <input type="text" name="new_name" placeholder="Provider Name"><br>
             <button type="submit">Add</button>
         </form>
-            {% for provid in provid_list %}
-            <h3>{{ provid[0] }} | {{ provid[1] }}</h3>
-            {%endfor%}
         <form action="/updateProvider" method="post">
             <label for=title>Update Provider Name</label>
-            <input type="text" name="id" placeholder="Provider_id"><br>
+            <input type="text" name="old_name" placeholder="Provider_old_Name"><br>
             <input type="text" name="new_name" placeholder="Provider_new_Name"<br>
             <button type="submit">Update</button>
         </form>

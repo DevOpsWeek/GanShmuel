@@ -7,8 +7,9 @@ import os
 from openpyxl.worksheet import worksheet
 
 UPLOAD_FOLDER = './in/'
+RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
-UPLOAD_DIRECTORY = "./in/"
+
 
 
 app = Flask(__name__)
@@ -49,49 +50,41 @@ def getHealth():
 def getRate():
     return render_template("getRates.html")
 
-@app.route('/downloadrates')
+@app.route('/rates/download', methods=['GET'])
 def downloadRates():
-    p = "in/rates.xlsx"
-    if os.path.exists(os.path.dirname('./app/in/rates.xlsx')):
-        return send_file(p,as_attachment=True)
-    else:
-        return render_template("getRates.html", message = "file not found")
-    
+    return send_from_directory(UPLOAD_FOLDER, RATES_FILE, as_attachment=True)
 
 @app.route('/rates', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':
-        file = request.files["file"]
-        file.save(os.path.join(os.path.dirname('./app/in/'), file.filename))
-        return render_template("getRates.html", message="success")
-    return render_template("getRates.html", message = "Upload")
+    file = request.files["file"]
+    file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
+    return render_template("getRates.html")
     
 @app.route('/providers')
 def Providers():
-    cursor.execute('SElECT * FROM Providers')
-    results = cursor.fetchall()
-    return render_template("providers.html",provid_list=results)
+    return render_template("providers.html")
 
 @app.route('/updateProvider',methods=['POST'])
 def postProvider():
     new_name=request.form.get("new_name")
-    id=request.form.get("id")
-    update='''UPDATE Providers SET provider_name = %s WHERE id = %s'''
-    val=(new_name,id)
-    cursor.execute(update,val)
+    old_name=request.form.get("old_name")
+    cursor.execute('select provider_name,id from Providers where provider_name=%s',(old_name,))
+    values=(new_name,)
+    results=cursor.fetchall()
+    for row in results:
+        values=values + (row[1],)
+    cursor.execute('UPDATE Providers SET provider_name = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Providers"))
 
 @app.route('/addProvider',methods=['POST'])
 def addProvider():
    new_name=request.form.get("new_name")
-#    id=request.form.get("id")
-#    insert='''INSERT INTO Providers(provider_name) VALUES (%s)'''
-   val =(new_name)
-   cursor.execute('INsERT INTO Providers(provider_name) VALUES (%s)',val)
+   cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(new_name,))
    cnx.commit()
-   
-   return jsonify(id)
+   cursor.execute('Select id from Providers where provider_name=%s',(new_name,))
+   results=cursor.fetchall()
+   return jsonify(results[0])
 
 
 @app.route('/trucks')
@@ -104,7 +97,10 @@ def Trucks():
 def updateTruck():
     truckid=request.form.get("id")
     provid=request.form.get("new_prov_id")
-    sql='''UPDATE Trucks SET provider_id = %s WHERE id = %s'''
+    sql='''#    if not len(results):
+#         cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(prov,))
+#         cnx.commit()
+#    else:UPDATE Trucks SET provider_id = %s WHERE id = %s'''
     val=(provid,truckid)
     cursor.execute(sql,val)
     cnx.commit()
@@ -113,15 +109,23 @@ def updateTruck():
 
 @app.route('/addTrucks', methods=['POST'])
 def addTruck():
-   truckid=request.form.get("id")
-   provid=request.form.get("prov_id")
-   sql='''INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)'''
-   val =(truckid,provid)
-   cursor.execute(sql,val)
+   id=request.form.get("id")
+   prov=request.form.get("prov_name")
+   values =(id,)
+   cursor.execute('Select id from Providers where provider_name=%s',(prov,))
+   results=cursor.fetchall()
+   if not results:
+        cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(prov,))
+        cnx.commit()
+        return "added new provider"
+
+   for row in results:
+        values=values+(row[0],)
+   cursor.execute('INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)',values)
    cnx.commit()
    return redirect(url_for("Trucks"))
    
-   
+
    
 @app.route('/bill', methods=["GET"])
 def getBill():
