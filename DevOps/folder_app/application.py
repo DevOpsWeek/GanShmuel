@@ -25,14 +25,14 @@ def send_email(branch_name,sender,reciver,result,comitter):
 def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
+    print(f"------- worked on branch {branch_name} -------")
     try:
         s = subprocess.check_output("docker ps -a | grep -o 'Db_container'", shell=True)
+        if s=="Db_container":
+            print("GOT THE S---------")
+            return True
     except:
         pass
-    print("GOT THE S---------")
-    print(f"------- worked on branch {branch_name} -------")
-    if s=="Db_container":
-        return True
     return False
 
 def run_docker(branch_name):
