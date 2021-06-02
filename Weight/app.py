@@ -1,9 +1,11 @@
-from flask import Flask, jsonify, render_template, request, redirect, Response, url_for
-from datetime import datetime, date
-from flaskext.mysql import MySQL
-import pandas
-import numpy
 import os
+from datetime import datetime, date
+
+import numpy
+import pandas
+from flask import Flask, jsonify, render_template, request, redirect, Response, url_for
+from flaskext.mysql import MySQL
+
 
 app = Flask(__name__)
 
@@ -276,7 +278,9 @@ def weight_ftf():
                     return "Truck direction can't be set to the same direction as last time when not in force mode, use force to overwrite"
                 else:
                     cursor.execute('DELETE FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                    conn.commit()
                     cursor.execute('DELETE FROM containers_registered WHERE container_id = %s', contarr[x])
+                    conn.commit()
             elif direction == 'out' and lastdir != 'in':
                 return "Truck direction can't be set to 'out' without having previously been set to 'in'"
             elif direction == 'none' and lastdir == 'in':
@@ -288,12 +292,15 @@ def weight_ftf():
                 brutoarrlbtokg[x] = int(float(brutoarr[x]) / 2.2)
             if direction == 'out':
                 cursor.execute('UPDATE sessions SET datetime = %s WHERE truck = %s', (datetime.now(), truck_id))
+                conn.commit()
                 try:
                     cursor.execute('DELETE FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                    conn.commit()
                 except:
                     pass
                 try:
                     cursor.execute('DELETE FROM containers_registered WHERE container_id = %s', contarr[x])
+                    conn.commit()
                 except:
                     pass
                 cursor.execute(
@@ -302,64 +309,82 @@ def weight_ftf():
                      produce))
                 cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)',
                                (contarr[x], brutoarr[x], unit))
-
+                conn.commit()
             else:
                 try:
                     cursor.execute('DELETE FROM transactions WHERE truck = %s AND datetime = %s', (truck_id, lasttime))
+                    conn.commit()
                 except:
                     pass
                 try:
                     cursor.execute('DELETE FROM containers_registered WHERE container_id = %s', contarr[x])
+                    conn.commit()
                 except:
                     pass
                 cursor.execute(
                     'INSERT INTO transactions (datetime, direction, truck, containers, bruto, produce) VALUES (%s, %s, %s, %s, %s, %s)',
                     (datetime.now(), direction, truck_id, contarr[x], brutoarrlbtokg[x], produce))
+                conn.commit()
                 cursor.execute('INSERT INTO containers_registered (container_id, weight, unit) VALUES (%s, %s, %s)',
                                (contarr[x], brutoarr[x], unit))
+                conn.commit()
                 if x == 0:
                     cursor.execute('INSERT INTO sessions (truck, datetime) VALUES (%s, %s)', (truck_id, datetime.now()))
+                    conn.commit()
             x = x + 1
+
     # don't forget to fill the form before submitting - V. Churikov
     print(direction, truck_id, containers, bruto, unit, produce, tare, neto, force)
+    conn.commit()
     return render_template("weight.html")
+
+def item_bug(to):
+    to = to.replace("]", '')
+    to = to.replace("[", '')
+    to = to.replace("\\", '')
+    to = to.replace("'", '')
+    to = to.replace('"', '')
+    to = to.replace(")", '')
+    to = to.replace("(", '')
+    to = to.replace(",", '')
+    return to
 
 
 @app.route("/item/<id>", methods=["GET", "POST"])
 def get_item(id):
     conn = mysql.connect()
     cursor = conn.cursor()
-    if id == '0':
-        return "/item/<id> is up and running!"
     print(id)
     to = request.args.get('to')
     print(to)
     fr = request.args.get('from')
     print(fr)
+
     if not to:
-        to = now.strftime("%Y%m%d%H%M%S")
-
+        cursor.execute("SELECT DATE_FORMAT(NOW(), '%Y-%m-%d-%m-%s')")
+        to = cursor.fetchall()
+        to = str(list(to))
+        to = item_bug(to)
     if not fr:
-        fr = now.strftime("%Y%m") + '01000000'
-
-    cursor.execute("SELECT IFNULL(transactions.truckTara, 'na' ), transactions.id, sessions.session_id"
+        cursor.execute("SELECT DATE_FORMAT(NOW() ,'%Y-%m-01-00-00')")
+        fr = cursor.fetchall()
+        fr = str(list(fr))
+        fr = item_bug(fr)
+    cursor.execute("SELECT DISTINCT IFNULL(transactions.truckTara, 'na' ), transactions.id, sessions.session_id"
                    " FROM transactions JOIN sessions ON transactions.truck=sessions.truck"
-                   " WHERE (transactions.id='{}') AND (sessions.datetime BETWEEN '{}' AND '{}')".format(id, fr, to))
-
+                   " WHERE (transactions.id='{}') AND (sessions.datetime BETWEEN '{}' AND '{}');".format(id, fr, to))
     ans = cursor.fetchall()
+
     if not ans:
         cursor.execute("SELECT IFNULL(transactions.truckTara, 'na' ), container_id , session_id "
                        "FROM containers_registered JOIN transactions ON "
                        "containers_registered.container_id=transactions.containers "
                        "JOIN sessions ON sessions.truck=transactions.truck "
-                       "WHERE (container_id='{}') AND (sessions.datetime BETWEEN '{}' AND '{}')".format(id, fr, to))
-
+                       "WHERE (container_id='{}') AND (sessions.datetime BETWEEN '{}' AND '{}');".format(id, fr, to))
         ans = cursor.fetchall()
 
     if not ans:
-        res = tuple_dict(ans[0], ("tara", "id", "session"))
-        return jsonify(res)
-        #return Response(status=404)
+        return Response(status=404)
 
     res = tuple_dict(ans[0], ("tara", "id", "session"))
     return jsonify(res)
