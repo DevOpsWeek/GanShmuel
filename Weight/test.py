@@ -76,4 +76,3 @@
 #     ]
 #     #return jsonify(resp=generate_response(attribute))
 print(200)
-return 200
