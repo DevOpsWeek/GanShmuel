@@ -51,14 +51,14 @@ def create_docker_compose(command_list,branch_name):
 def test_env (branch_name):
     if(branch_name=="Billing"):
         os.environ['BILLING_PORT']="8085"
-        os.system("git checkout Weight")
-        os.chdir("/app/GanShmuel/Weight")
+        os.system("git checkout Billing")
+        os.chdir("/app/GanShmuel/Billing")
         os.system("docker-compose up -d")
         os.system("git checkout Billing")
-        os.chdir("/app/GanShmuel/Billing/app")
+        os.chdir("/app/GanShmuel/Billing")
         os.system("docker-compose up -d")
         os.system("chmod +x test.py")
-        result=subprocess.check_output("python3 ./test.py")
+        result=subprocess.check_output(['python3', './test.py'])
         os.system("docker-compose down")
         return result
     elif branch_name=="Weight":
