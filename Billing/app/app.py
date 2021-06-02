@@ -200,13 +200,25 @@ def getBill(id):
                 count +=1
                 amount += dict["neto"]
         products.append({"product":name,"count":count,"amount":amount})
+        
+    cursor.execute('select product_name,rates,scope from products')
+    rates_list=cursor.fetchall()
+
+    total=0
+    for dict in products:
+      for row in rates_list:
+         if row[0] == dict["product"] and row[2] == 'All':
+            dict["rates"]=row[1]
+            dict["pay"]=dict["rates"] * dict ["amount"]
+            total += dict["pay"]
+         elif row[0] == dict["product"] and row[2] == prov[0][0]:
+              dict["rates"]=row[1]
+              dict["pay"]=dict["rates"] * dict ["amount"]
+              total += dict["pay"]
+            
     
-    
-    
-     
-    
-    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0][0],"SessionCount":sessionCount}
-    # return json.dumps(bill)
+    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0],"SessionCount":sessionCount,"products":products,"total":total}
+    return json.dumps(bill)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
