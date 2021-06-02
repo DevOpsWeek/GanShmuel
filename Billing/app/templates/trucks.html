@@ -17,15 +17,8 @@
 
         {% for truck in truck_list %} 
             <h3>{{ truck[0] }}</h3>
-             <form action="getTruck/{{truck[0]}}" method='get'>
-                <input type="text" id="t1" name="from" placeholder="yyyymmddhhmmss"><br>
-                <input type="text" id="t2" name="to" placeholder='yyyymmddhhmmss'><br>
-                <button type="submit">Get</button>
-            </form>
-
         {% endfor %}
         
-
         <p>
             <a href="/">Return to main</a>
         </p>

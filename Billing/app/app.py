@@ -133,14 +133,12 @@ def addTruck():
    return redirect(url_for("Trucks"))
    
    
-@app.route('/getTruck/<id>')
-def getTruck(id):
+@app.route('/getTruck/<id>?from=<t1>&to=<t2>')
+def getTruck(id,t1,t2):
     x=datetime.datetime.now()
     cursor.execute('select id from Trucks where id=%s',(id,))
     results=cursor.fetchall()
     truck=results[0][0]
-    t1=request.form.get("from")
-    t2=request.form.get("to")
     if not results:
         return Response(status=404)
     if not t1:
