@@ -1,5 +1,7 @@
-import datetime, mysql.connector, os, xlrd
+import datetime, mysql.connector, os, xlrd, json
 from flask import Flask, json,request,render_template, redirect ,url_for, send_from_directory,Response
+from typing import Sequence
+from flask.globals import session
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
@@ -21,10 +23,14 @@ app.config.update(
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
 
+bill_port=8083
+weight_port=8081
+bill_url=f'http://0.0.0.0:{bill_port}'
+weight_url=f'http://0.0.0.0:{weight_port}'
 
 @app.route('/',methods=['GET'])
 def index():
-    return render_template('base.html')
+    return render_template("index.html")
 
 @app.route('/health',methods=['GET'])
 def getHealth():
@@ -85,7 +91,11 @@ def addProvider():
    new_name=request.form.get("new_name")
    cursor.execute('INSERT INTO Providers(provider_name) VALUES (%s)',(new_name,))
    cnx.commit()
-   cursor.execute('Select id from Providers where provider_name=%s',(new_name,))
+   return redirect(url_for("Providers"))
+
+@app.route('/getID/<name>',methods=['get'])
+def getID(name):
+   cursor.execute('Select id from Providers where provider_name=%s',(name,))
    results=cursor.fetchall()
    id={"id":results[0][0]}
    return json.dumps(id)
@@ -93,14 +103,13 @@ def addProvider():
 
 @app.route('/trucks')
 def Trucks():
-    cursor.execute('SElECT id from Trucks')
-    results = cursor.fetchall()
+    cursor.execute('select id from Trucks')
+    results=cursor.fetchall()
     return render_template("trucks.html",truck_list=results)
 
 @app.route('/updateTruck' ,methods=['post'])
 def updateTruck():
     values=()
-    id=request.form.get("id")
     prov=request.form.get("new_prov")
     cursor.execute('Select id from Providers where provider_name=%s',(prov,))
     results=cursor.fetchall()
@@ -135,22 +144,28 @@ def addTruck():
    return redirect(url_for("Trucks"))
    
    
-@app.route('/getTruck/<id>?from=t1&to=t2')
+@app.route('/getTruck/<id>')
 def getTruck(id):
     x=datetime.datetime.now()
     cursor.execute('select id from Trucks where id=%s',(id,))
     results=cursor.fetchall()
+    truck=results[0][0]
     t1=request.form.get("from")
     t2=request.form.get("to")
     if not results:
         return Response(status=404)
     if not t1:
-        t1= datetime.datetime(x.year,x.month,1)
+         for i in str(datetime.datetime(x.year,x.month,1)):
+             if i.isalnum():
+                 t1+=i
+        
     if not t2:
-        t2=x
-    # response = [json.load(requests.post(url="http://0.0.0.0:5000/item/<id>?from=t1&to=t2")]????
-    #add to get dict "session":response[0][tara]
-    get={"id":results[0][0],"from":t1,"to":t2}
+        for i in str(x):
+            if i.isalnum():
+                t2+=i
+                
+    url=(f'{weight_url}/item/{truck}?from={t1}to&{t2}')
+    get=json.load(request.get(url=url))
     return json.dumps(get)
 
     
@@ -159,22 +174,83 @@ def getTruck(id):
 @app.route('/bill/<id>', methods=["GET"])
 def getBill(id):
     x=datetime.datetime.now()
+    
     cursor.execute('select id,provider_name from Providers where id=%s',(id,))
-    results=cursor.fetchall()
+    prov=cursor.fetchall()
+    
     t1=request.form.get("from")
     t2=request.form.get("to")
-    if not results:
+    
+    if not prov:
         return Response(status=404)
     if not t1:
-        t1= datetime.datetime(x.year,x.month,1)
+         for i in str(datetime.datetime(x.year,x.month,1)):
+             if i.isalnum():
+                 t1+=i
+        
     if not t2:
-        t2=x
-    #truckCount ???
-    #sessionCount ???
-    products =[] #need to build from api and xl reading ???? 
-    bill={"id":results[0][0],"name":results[0][1],"from":t1,"to":t2}
-    # return json.dumps(bill)
-    return render_template('bill.html')
+        for i in str(x):
+            if i.isalnum():
+                t2+=i
+                
+        
+    cursor.execute('select count(*) from Trucks where provider_id=%s',(id,))
+    truckCount=cursor.fetchall()
+    sessionCount=0
+    cursor.execute('select id from Trucks where provider_id=%s',(id,))
+    trucks=cursor.fetchall()
+    getTrucks_list=[]
+    session_ID_list=[]
+    
+    for id in trucks:
+        ID=id
+        getTrucks_list.append(json.load(request.get(url=f'{bill_url}/getTruck/{ID}?from={t1}to={t2}')))
+    
+    for dict in getTrucks_list:
+       sessionCount += len(dict["session"])
+       for i in dict["session"]:
+            session_ID_list.append(i)
+       
+    session_response=[]
+    neto_produce_list=[]
+    
+    for session in session_ID_list:
+        session_response.append(json.load(request.get(url=f'{weight_url}/session/{session}')))
+        for data in session_response:
+          neto_produce_list.append({"neto":data["neto"],"produce":data["produce"]})
+    
+  
+    cursor.execute('select product_id from products')
+    product_name=cursor.fetchall()    
+    products=[]
+    
+    for name in product_name:
+        count=0
+        amount=0
+        for dict in neto_produce_list:
+            if name == dict["produce"]:
+                count +=1
+                amount += dict["neto"]
+        products.append({"product":name,"count":count,"amount":amount})
+        
+    cursor.execute('select product_id,rates,scope from products')
+    rates_list=cursor.fetchall()
+
+    total=0
+    for dict in products:
+      for row in rates_list:
+         if row[0] == dict["product"] and row[2] == 'All':
+            dict["rates"]=row[1]
+            dict["pay"]=dict["rates"] * dict ["amount"]
+            total += dict["pay"]
+         elif row[0] == dict["product"] and row[2] == prov[0][0]:
+              dict["rates"]=row[1]
+              dict["pay"]=dict["rates"] * dict ["amount"]
+              total += dict["pay"]
+            
+    
+    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0],"SessionCount":sessionCount,"products":products,"total":total}
+    return json.dumps(bill)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
