@@ -329,12 +329,13 @@ def weight_ftf():
 def get_item(id):
     conn = mysql.connect()
     cursor = conn.cursor()
+    if id == '0':
+        return "/item/<id> is up and running!"
     print(id)
     to = request.args.get('to')
     print(to)
     fr = request.args.get('from')
     print(fr)
-
     if not to:
         to = now.strftime("%Y%m%d%H%M%S")
 
@@ -366,6 +367,8 @@ def get_item(id):
 
 @app.route("/session/<id>", methods=["POST", "GET"])
 def index7(id):
+    if id == '0':
+        return "/session/<id> is up and running!"
     requrl = request.url
     requrl = requrl.split('/')
     requrl = requrl[(len(requrl) - 1)]
