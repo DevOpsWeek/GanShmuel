@@ -14,7 +14,7 @@ services:
     links:
       - db
     ports:
-      - "5000:5000"
+      - "${BILLING_PORT}:5000"
     depends_on:
       - db
     restart: unless-stopped
