@@ -383,23 +383,25 @@ def index7(id):
         directions = 'none'
     print(directions)
     if directions == "out":
-        query = "SELECT transactions.id, transactions.bruto, transactions.neto, sessions.truck FROM transactions join sessions on transactions.truck = sessions.truck WHERE (sessions.session_id='{}')".format(
+        query = "SELECT transactions.id, sessions.truck, transactions.bruto, transactions.neto, transactions.truckTara, transactions.produce FROM transactions join sessions on transactions.truck = sessions.truck WHERE (sessions.session_id='{}')".format(
             id)
         cursor.execute(query)
+        return jsonify(cursor.fetchall())
         conn.commit()
         res = cursor.fetchall()
         cursor.close()
         args = numpy.array(res)
-        return jsonify(listmatx(args, 'id,trucks id,bruto ,neto,truck weight'))
+        return jsonify(listmatx(args, 'id,truck,bruto,neto,truckTara'))
     if directions == 'in' or directions == 'none':
-        query = "SELECT transactions.id , transactions.bruto , sessions.truck FROM transactions join sessions on transactions.truck =sessions.truck WHERE (sessions.session_id='{}')".format(
-            id)
+        query = "SELECT transactions.id, sessions.truck, transactions.bruto, transactions.neto, transactions.truckTara, transactions.produce FROM transactions join sessions on transactions.truck = sessions.truck WHERE (sessions.session_id='{}')".format(id)
+        # query = "SELECT transactions.id , transactions.bruto , sessions.truck FROM transactions join sessions on transactions.truck =sessions.truck WHERE (sessions.session_id='{}')".format(id)
         cursor.execute(query)
+        return jsonify(cursor.fetchall())
         conn.commit()
         res = cursor.fetchall()
         cursor.close()
         args = numpy.array(res)
-        return jsonify(listmatx(args, 'id,trucks id,bruto'))
+        return jsonify(listmatx(args, 'id,truck,bruto,neto,truckTara'))
     # return render_template("session.html")
     return jsonify(directions)
 
