@@ -69,7 +69,7 @@ def upload_file():
 
 @app.route('/providers')
 def Providers():
-    cursor.execute('SElECT provider_name FROM Providers')
+    cursor.execute('SElECT provider_name,id FROM Providers')
     results = (cursor.fetchall())
     return render_template("providers.html",provid_list=results)
 
@@ -177,7 +177,7 @@ def getTruck(id):
 def getBill(id):
     x=datetime.datetime.now()
     
-    cursor.execute('select id,provider_name from Providers where id=%s',(id,))
+    cursor.execute('select provider_name from Providers where id=%s',(id,))
     prov=cursor.fetchall()
     
     t1=request.form.get("from")
@@ -186,11 +186,13 @@ def getBill(id):
     if not prov:
         return Response(status=404)
     if not t1:
-         for i in str(datetime.datetime(x.year,x.month,1)):
-             if i.isalnum():
-                 t1+=i
+        t1=""
+        for i in str(datetime.datetime(x.year,x.month,1)):
+            if i.isalnum():
+               t1 += i
         
     if not t2:
+        t2=""
         for i in str(x):
             if i.isalnum():
                 t2+=i
@@ -250,7 +252,7 @@ def getBill(id):
               total += dict["pay"]
             
     
-    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0],"SessionCount":sessionCount,"products":products,"total":total}
+    bill={"id":id,"name":prov[0],"from":t1,"to":t2,"TruckCount":truckCount[0],"SessionCount":sessionCount,"products":products,"total":total}
     return json.dumps(bill)
 
 if __name__ == '__main__':
