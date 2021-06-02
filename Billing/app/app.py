@@ -1,11 +1,10 @@
-import datetime
+import datetime, mysql.connector, os, xlrd
 from flask import Flask, json,request,render_template, redirect ,url_for, send_from_directory,Response
-import mysql.connector
-import os
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
+
 
 def allowed_file(filename): #made for the rates POST so that uploaded files must be .xlsx files 
     return '.' in filename and \
@@ -47,6 +46,19 @@ def upload_file():
     file = request.files["file"]
     if file and allowed_file(file.filename):
         file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
+        book = xlrd.open_workbook(r'in/rates.xlsx')
+        sheet = book.sheet_by_name("rates")
+
+        query = '''INSERT INTO Rates (product_id, rate, scope)
+                VALUES (%s, %s, %s)'''
+        for r in range(1, sheet.nrows):
+            Product = sheet.cell(r, 0).value
+            Rate = sheet.cell(r, 1).value
+            Scope = sheet.cell(r, 2).value
+
+            values = (Product, Rate, Scope)
+            
+            cursor.execute(query, values)
     return render_template("getRates.html")
 
 @app.route('/providers')
