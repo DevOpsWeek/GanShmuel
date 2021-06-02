@@ -1,14 +1,12 @@
-import datetime
+import datetime, mysql.connector, os, xlrd, json
+from flask import Flask, json,request,render_template, redirect ,url_for, send_from_directory,Response
 from typing import Sequence
-from flask import Flask, json,request,render_template,redirect ,url_for, send_from_directory,Response
 from flask.globals import session
-import mysql.connector
-import os
-import json
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
+
 
 def allowed_file(filename): #made for the rates POST so that uploaded files must be .xlsx files 
     return '.' in filename and \
@@ -24,7 +22,6 @@ app.config.update(
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
-
 
 bill_port=8083
 weight_port=8081
@@ -55,11 +52,24 @@ def upload_file():
     file = request.files["file"]
     if file and allowed_file(file.filename):
         file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
+        book = xlrd.open_workbook(r'in/rates.xlsx')
+        sheet = book.sheet_by_name("rates")
+        cursor.execute('''DELETE FROM Rates''')
+        query = '''REPLACE INTO Rates (product_id, rate, scope)
+                VALUES (%s, %s, %s)'''
+        for r in range(1, sheet.nrows):
+            Product = sheet.cell(r, 0).value
+            Rate = sheet.cell(r, 1).value
+            Scope = sheet.cell(r, 2).value
+
+            values = (Product, Rate, Scope)
+            
+            cursor.execute(query, values)
     return render_template("getRates.html")
 
 @app.route('/providers')
 def Providers():
-    cursor.execute('SElECT provider_name,id FROM Providers')
+    cursor.execute('SElECT provider_name FROM Providers')
     results = (cursor.fetchall())
     return render_template("providers.html",provid_list=results)
 
@@ -110,8 +120,7 @@ def updateTruck():
         cursor.execute('Select id from Providers where provider_name=%s',(prov,))
         results=cursor.fetchall()
     for row in results:
-        values = values + row 
-        
+        values = values + row
     values = values + (id,)
     cursor.execute('UPDATE Trucks SET provider_id = %s WHERE id = %s',values)
     cnx.commit()
@@ -131,19 +140,20 @@ def addTruck():
         cursor.execute('Select id from Providers where provider_name=%s',(prov,))
         results=cursor.fetchall()
    for row in results:
-        values=values+row
+        values=values+(row[0],)
    cursor.execute('INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)',values)
    cnx.commit()
    return redirect(url_for("Trucks"))
    
    
-@app.route('/getTruck/<id>?from=<t1>&to=<t2>')
-def getTruck(id,t1,t2):
+@app.route('/getTruck/<id>')
+def getTruck(id):
     x=datetime.datetime.now()
     cursor.execute('select id from Trucks where id=%s',(id,))
     results=cursor.fetchall()
     truck=results[0][0]
-
+    t1=request.form.get("from")
+    t2=request.form.get("to")
     if not results:
         return Response(status=404)
     if not t1:
@@ -178,12 +188,12 @@ def getBill(id):
     if not t1:
          for i in str(datetime.datetime(x.year,x.month,1)):
              if i.isalnum():
-                 t1 = t1 +i
+                 t1+=i
         
     if not t2:
         for i in str(x):
             if i.isalnum():
-                t2 = t2 +i
+                t2+=i
                 
         
     cursor.execute('select count(*) from Trucks where provider_id=%s',(id,))
