@@ -25,6 +25,7 @@ app.config.update(
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
 
+
 bill_port=8083
 weight_port=8081
 bill_url=f'http://0.0.0.0:{bill_port}'
@@ -58,7 +59,7 @@ def upload_file():
 
 @app.route('/providers')
 def Providers():
-    cursor.execute('SElECT provider_name FROM Providers')
+    cursor.execute('SElECT provider_name,id FROM Providers')
     results = (cursor.fetchall())
     return render_template("providers.html",provid_list=results)
 
@@ -99,6 +100,7 @@ def Trucks():
 @app.route('/updateTruck' ,methods=['post'])
 def updateTruck():
     values=()
+    id=request.form.get("id")
     prov=request.form.get("new_prov")
     cursor.execute('Select id from Providers where provider_name=%s',(prov,))
     results=cursor.fetchall()
@@ -108,7 +110,9 @@ def updateTruck():
         cursor.execute('Select id from Providers where provider_name=%s',(prov,))
         results=cursor.fetchall()
     for row in results:
-        values = values + (row[0],id)
+        values = values + row 
+        
+    values = values + (id,)
     cursor.execute('UPDATE Trucks SET provider_id = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Trucks"))
@@ -127,7 +131,7 @@ def addTruck():
         cursor.execute('Select id from Providers where provider_name=%s',(prov,))
         results=cursor.fetchall()
    for row in results:
-        values=values+(row[0],)
+        values=values+row
    cursor.execute('INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)',values)
    cnx.commit()
    return redirect(url_for("Trucks"))
@@ -174,12 +178,12 @@ def getBill(id):
     if not t1:
          for i in str(datetime.datetime(x.year,x.month,1)):
              if i.isalnum():
-                 t1+=i
+                 t1 = t1 +i
         
     if not t2:
         for i in str(x):
             if i.isalnum():
-                t2+=i
+                t2 = t2 +i
                 
         
     cursor.execute('select count(*) from Trucks where provider_id=%s',(id,))
@@ -191,8 +195,7 @@ def getBill(id):
     session_ID_list=[]
     
     for id in trucks:
-        ID=id
-        getTrucks_list.append(json.load(request.get(url=f'{bill_url}/getTruck/{ID}?from={t1}to={t2}')))
+        getTrucks_list.append(json.load(request.get(url=f'{bill_url}/getTruck/{id}?from={t1}to={t2}')))
     
     for dict in getTrucks_list:
        sessionCount += len(dict["session"])
