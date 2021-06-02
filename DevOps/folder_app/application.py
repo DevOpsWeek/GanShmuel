@@ -59,7 +59,7 @@ def test_env (branch_name):
         os.system("docker-compose up -d")
         os.system("chmod +x test.py")
         result=subprocess.check_output("python3 ./test.py")
-        os.system("docker compose down")
+        os.system("docker-compose down")
         return result
     elif branch_name=="Weight":
         os.environ['WEIGHT_PORT']="8086"
@@ -68,7 +68,7 @@ def test_env (branch_name):
         os.system("docker-compose up -d")
         os.system("chmod +x test.py")
         result=subprocess.check_output(['python3', './test.py'])
-        os.system("docker compose down")
+        os.system("docker-compose down")
     elif branch_name=="main":
         result=200
     print(int(result))
