@@ -20,11 +20,11 @@ CREATE TABLE IF NOT EXISTS `Providers` (
 
 CREATE TABLE IF NOT EXISTS `products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
- `product_id` varchar(50) NOT NULL,
+ `product_name` varchar(50) NOT NULL,
   `rate` int(11) DEFAULT 0,
   `scope` varchar(50) DEFAULT NULL,
   FOREIGN KEY (scope) REFERENCES `Providers`(`id`)
-) ENGINE=MyISAM 
+) ENGINE=MyISAM  AUTO_INCREMENT=1
 
 CREATE TABLE IF NOT EXISTS `Trucks` (
   `id` varchar(10) NOT NULL,

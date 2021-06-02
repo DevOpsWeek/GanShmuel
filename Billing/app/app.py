@@ -1,5 +1,7 @@
 import datetime
+from typing import Sequence
 from flask import Flask, json,request,render_template, redirect ,url_for, send_from_directory,Response
+from flask.globals import session
 import mysql.connector
 import os
 import json
@@ -124,7 +126,7 @@ def addTruck():
    return redirect(url_for("Trucks"))
    
    
-@app.route('/getTruck/<id>?from=t1&to=t2')
+@app.route('/getTruck/<id>?from=<t1>&to=<t2>')
 def getTruck(id):
     x=datetime.datetime.now()
     cursor.execute('select id from Trucks where id=%s',(id,))
@@ -138,7 +140,7 @@ def getTruck(id):
         t1= str(datetime.datetime(x.year,x.month,1))
     if not t2:
         t2=str(x)
-    url=(f'http://0.0.0.0:5000/item/{truck}?from={t1}to&{t2}')
+    url=(f'http://0.0.0.0:5001/item/{truck}?from={t1}to&{t2}')
     item=json.load(request.get(url=url))
     get={"id":truck,"from":t1,"to":t2,"tara":item["tara"],"session":item["session"]}
     return json.dumps(get)
@@ -149,6 +151,7 @@ def getTruck(id):
 @app.route('/bill/<id>', methods=["GET"])
 def getBill(id):
     x=datetime.datetime.now()
+    sessionCount=0
     
     cursor.execute('select id,provider_name from Providers where id=%s',(id,))
     prov=cursor.fetchall()
@@ -163,21 +166,44 @@ def getBill(id):
     if not t2:
         t2=str(x)
         
-    cursor.execute('select count(*) from Trucks where provider_name=%s',(id,))
+    cursor.execute('select count(*) from Trucks where provider_id=%s',(id,))
     truckCount=cursor.fetchall()
     
     cursor.execute('select id from Trucks where provider_id=%s',(id,))
     trucks=cursor.fetchall()
+    getTrucks_list=[]
+    session_ID_list=[]
+    for id in trucks:
+        ID=id
+        getTrucks_list.append(json.load(request.get(url=f'http://0.0.0.0:5000/getTruck/{ID}?from={t1}to={t2}')))
+    
+    for dict in getTrucks_list:
+       sessionCount += len(dict["session"])
+       for i in dict["session"]:
+            session_ID_list.append(i)
+       
+    session_response=[]
+    neto_produce_list=[]
+    for session in session_ID_list:
+        session_response.append(json.load(request.get(url=f'http://0.0.0.0:5001/session/{session}')))
+        neto_produce_list.append({"neto":session_response["neto"],"produce":session_response["produce"]})
+    
+  
+    cursor.execute('select product_name from products')
+    product_name=cursor.fetchall()    
+    products=[]
+    for name in product_name:
+        count=0
+        amount=0
+        for dict in neto_produce_list:
+            if name == dict["produce"]:
+                count +=1
+                amount += dict["neto"]
+        products.append({"product":name,"count":count,"amount":amount})
     
     
-    getTruckResponses = [json.dumps()]
     
-    
-    
-    
-    
-    
-    
+     
     
     bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0][0]}
     # return json.dumps(bill)
