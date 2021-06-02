@@ -205,7 +205,7 @@ def getBill(id):
     
      
     
-    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0][0]}
+    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0][0],"SessionCount":sessionCount}
     # return json.dumps(bill)
 
 if __name__ == '__main__':
