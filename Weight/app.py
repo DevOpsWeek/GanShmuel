@@ -165,7 +165,7 @@ def index5():
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM containers_registered WHERE weight=0')
     data = cursor.fetchall()
-    if not data:
+    if data:
         Response(status=200)
     else:
         Response(status=500)
@@ -356,10 +356,11 @@ def get_item(id):
         ans = cursor.fetchall()
 
     if not ans:
-        return Response(status=404)
+        res = tuple_dict(ans[0], ("tara", "id", "session"))
+        return jsonify(res)
+        #return Response(status=404)
 
     res = tuple_dict(ans[0], ("tara", "id", "session"))
-
     return jsonify(res)
 
 

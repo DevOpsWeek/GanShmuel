@@ -1,5 +1,6 @@
-#!/bin/bash
-set WEIGHT_PORT $1
+#!/bin/sh
+export WEIGHT_PORT=$1
+echo $WEIGHT_PORT
 docker image rm -f weight_web:latest
 docker-compose down
-docker-compose --env-file ./.env.stg up
+docker-compose up
