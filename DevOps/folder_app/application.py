@@ -66,7 +66,7 @@ def test_env (branch_name):
         os.chdir("/app/GanShmuel/Weight")
         os.system("docker-compose -p Weight_test up -d")
         os.system("chmod +x test.py")
-        result=subprocess.check_output(['python3', './test.py'],shell=True)
+        result=subprocess.check_output(['python3', './test.py'])
     elif branch_name=="main":
         result=200
     return result
