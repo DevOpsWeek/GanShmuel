@@ -18,7 +18,8 @@ services:
     web:
       build: .
       ports:
-        - $WEIGHT_PORT:5000
+        - ${WEIGHT_PORT}:5000
+
       links:
         - db
       command: ./entrypoint.sh
