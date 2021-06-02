@@ -110,6 +110,7 @@ def Trucks():
 @app.route('/updateTruck' ,methods=['post'])
 def updateTruck():
     values=()
+    id=request.form.get("id")
     prov=request.form.get("new_prov")
     cursor.execute('Select id from Providers where provider_name=%s',(prov,))
     results=cursor.fetchall()
@@ -119,7 +120,8 @@ def updateTruck():
         cursor.execute('Select id from Providers where provider_name=%s',(prov,))
         results=cursor.fetchall()
     for row in results:
-        values = values + (row[0],id)
+        values = values + row
+    values = values + (id,)
     cursor.execute('UPDATE Trucks SET provider_id = %s WHERE id = %s',values)
     cnx.commit()
     return redirect(url_for("Trucks"))

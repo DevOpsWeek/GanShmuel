@@ -11,18 +11,12 @@
         <form action="/updateTruck" method="post">
             <label for=title>Update Provider</label>
             <input type="text" name="id" placeholder="Truck ID_to_Update"><br>
-            <input type="text" name="new_prov" placeholder="Truck's new Provider"<br>
+            <input type="text" name="new_prov" placeholder="Truck's new Provider"><br>
             <button type="submit">Update</button>
         </form>
 
         {% for truck in truck_list %} 
             <h3>{{ truck[0] }}</h3>
-             <form action="getTruck/{{truck[0]}}" method='get'>
-                <input type="text" id="t1" name="from" placeholder="yyyymmddhhmmss"><br>
-                <input type="text" id="t2" name="to" placeholder='yyyymmddhhmmss'><br>
-                <button type="submit">Get</button>
-            </form>
-
         {% endfor %}
         
 
