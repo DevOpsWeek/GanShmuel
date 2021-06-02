@@ -2,6 +2,7 @@ import datetime
 from flask import Flask, json,request,render_template, redirect ,url_for, send_from_directory,Response
 import mysql.connector
 import os
+import json
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
@@ -128,17 +129,18 @@ def getTruck(id):
     x=datetime.datetime.now()
     cursor.execute('select id from Trucks where id=%s',(id,))
     results=cursor.fetchall()
+    truck=results[0][0]
     t1=request.form.get("from")
     t2=request.form.get("to")
     if not results:
         return Response(status=404)
     if not t1:
-        t1= datetime.datetime(x.year,x.month,1)
+        t1= str(datetime.datetime(x.year,x.month,1))
     if not t2:
-        t2=x
-    # response = [json.load(requests.post(url="http://0.0.0.0:5000/item/<id>?from=t1&to=t2")]????
-    #add to get dict "session":response[0][tara]
-    get={"id":results[0][0],"from":t1,"to":t2}
+        t2=str(x)
+    url=(f'http://0.0.0.0:5000/item/{truck}?from={t1}to&{t2}')
+    item=json.load(request.get(url=url))
+    get={"id":truck,"from":t1,"to":t2,"tara":item["tara"],"session":item["session"]}
     return json.dumps(get)
 
     
@@ -147,22 +149,38 @@ def getTruck(id):
 @app.route('/bill/<id>', methods=["GET"])
 def getBill(id):
     x=datetime.datetime.now()
+    
     cursor.execute('select id,provider_name from Providers where id=%s',(id,))
-    results=cursor.fetchall()
+    prov=cursor.fetchall()
+    
     t1=request.form.get("from")
     t2=request.form.get("to")
-    if not results:
+    
+    if not prov:
         return Response(status=404)
     if not t1:
-        t1= datetime.datetime(x.year,x.month,1)
+        t1=str(datetime.datetime(x.year,x.month,1))
     if not t2:
-        t2=x
-    #truckCount ???
-    #sessionCount ???
-    products =[] #need to build from api and xl reading ???? 
-    bill={"id":results[0][0],"name":results[0][1],"from":t1,"to":t2}
+        t2=str(x)
+        
+    cursor.execute('select count(*) from Trucks where provider_name=%s',(id,))
+    truckCount=cursor.fetchall()
+    
+    cursor.execute('select id from Trucks where provider_id=%s',(id,))
+    trucks=cursor.fetchall()
+    
+    
+    getTruckResponses = [json.dumps()]
+    
+    
+    
+    
+    
+    
+    
+    
+    bill={"id":prov[0][0],"name":prov[0][1],"from":t1,"to":t2,"TruckCount":truckCount[0][0]}
     # return json.dumps(bill)
-    return render_template('bill.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
