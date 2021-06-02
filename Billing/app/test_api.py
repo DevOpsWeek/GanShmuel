@@ -13,7 +13,6 @@ for i in BILLING_PATHS:
      try:
          response = requests.get(f"{test}{i}")
          response.raise_for_status()
-
      except HTTPError as http_err:
           print("500")
           break 
