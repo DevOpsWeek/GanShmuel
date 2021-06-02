@@ -48,8 +48,8 @@ def upload_file():
         file.save(os.path.join(UPLOAD_FOLDER, RATES_FILE))
         book = xlrd.open_workbook(r'in/rates.xlsx')
         sheet = book.sheet_by_name("rates")
-
-        query = '''INSERT INTO Rates (product_id, rate, scope)
+        cursor.execute('''DELETE FROM Rates''')
+        query = '''REPLACE INTO Rates (product_id, rate, scope)
                 VALUES (%s, %s, %s)'''
         for r in range(1, sheet.nrows):
             Product = sheet.cell(r, 0).value
