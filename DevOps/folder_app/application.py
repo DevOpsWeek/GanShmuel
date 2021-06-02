@@ -72,7 +72,7 @@ def test_env (branch_name):
     elif branch_name=="main":
         result=200
     print(int(result))
-    os.system("docker network prune")
+    os.system("sudo docker network prune")
     return int(result)
 
 # Main funcation - run tests 
