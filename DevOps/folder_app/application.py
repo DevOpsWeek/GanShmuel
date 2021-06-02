@@ -53,10 +53,10 @@ def test_env (branch_name):
         os.environ['BILLING_PORT']="8085"
         os.system("git checkout Weight")
         os.chdir("/app/GanShmuel/Weight")
-        os.system("docker-compose -p Weight_test up -d")
+        os.system("docker-compose up -d")
         os.system("git checkout Billing")
         os.chdir("/app/GanShmuel/Billing/app")
-        os.system("docker-compose -p Billing_test up -d")
+        os.system("docker-compose up -d")
         os.system("chmod +x test.py")
         result=subprocess.check_output("python3 ./test.py")
         os.system("docker compose down")
@@ -65,10 +65,10 @@ def test_env (branch_name):
         os.environ['WEIGHT_PORT']="8086"
         os.system("git checkout Weight")
         os.chdir("/app/GanShmuel/Weight")
-        os.system("docker-compose -p Weight_test up -d")
+        os.system("docker-compose up -d")
         os.system("chmod +x test.py")
-        os.system("docker compose down")
         result=subprocess.check_output(['python3', './test.py'])
+        os.system("docker compose down")
     elif branch_name=="main":
         result=200
     print(int(result))
