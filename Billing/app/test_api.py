@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import HTTPError
 import socket
 
 BILLING_PATHS = ["/","/health","/rates","/providers","/rates/download","/trucks","/bill"]
@@ -6,15 +7,26 @@ BILLING_PATHS = ["/","/health","/rates","/providers","/rates/download","/trucks"
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
 test = f"{'http://'}{local_ip}{':5000'}"
-print("##############################################")
-print("Hello,This is a script to test the Billing API")
-print("##############################################")
-
-print("Local ip:",local_ip)
+print("##################")
+print("Local IP:",local_ip,'\n')
+print("Test is running...")
+print("##################")
 
 for i in BILLING_PATHS:
-     response = requests.get(f"{test}{i}")
-     if response.status_code == 200:
-          print(f"{i}"": Successful <",response.status_code,">")
+     try:
+         response = requests.get(f"{test}{i}")
+         response.raise_for_status()
+
+     except HTTPError as http_err:
+         print(f'{"Running to: "}{i}')
+         print(f'HTTP error occurred: {http_err}')
+
+     except Exception as err:
+         print(f'{"Running to: "}{i}')
+         print(f'{"Server is down. Connection refused."}')
+
      else:
-          print(f"{i}"": Failed <",response.status_code,">")
+          response = requests.get(f"{test}{i}")
+          print(f'{"Running to: "}{i}')
+          print(f'{"HTTP Successful: response code:"}{response.status_code}')
+     print('\n')
