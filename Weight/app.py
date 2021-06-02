@@ -155,9 +155,9 @@ def index2():
     return render_template("batch-weight.html")
 
 
-# @app.route("/index.html", methods=["POST", "GET"])
-# def index3():
-#     return render_template("index.html")
+@app.route("/index.html", methods=["POST", "GET"])
+def index3():
+    return render_template("index.html")
 
 @app.route("/unknown", methods=["GET"])
 def index5():
@@ -165,6 +165,10 @@ def index5():
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM containers_registered WHERE weight=0')
     data = cursor.fetchall()
+    if not data:
+        Response(status=200)
+    else:
+        Response(status=500)
     return render_template("unknown.html", data=data)
 
 
