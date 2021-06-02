@@ -1,8 +1,6 @@
 import json,os,subprocess,smtplib
 from flask import Flask, request
 
- WEIGHT_STAGING= 8081
- WEIGHT_PROD=8082
 
 email_dic={"sender":"devweek.ci.mails@gmail.com","rec_billing":["david45453@gmail.com","12345angela54@gmail.com"],\
             "rec_weight":["koren.shoshan@gmail.com","12345angela54@gmail.com"],"rec_devops":"12345angela54@gmail.com","password":"A159753a!"}
@@ -26,20 +24,33 @@ def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     if branch_name=="Weight":
-        os.environ["WEIGHT_PORT"]=WEIGHT_STAGING
-        os.system("docker-compose up")
+         os.environ['WEIGHT_PORT']="8081"
+         print(os.environ['WEIGHT_PORT'])
+         os.system("docker-compose up")
     elif branch_name=="Billing":
-        os.system("docker-compose --env-file ./.env.stg up")
-    elif branch_name=="DevOps":
-        os.system("docker-compose up -d")
-    #elif branch_name=="main":
+         os.environ['BILLING_PORT']="8083"
+         print(os.environ['BILLING_PORT'])
+         os.system("docker-compose up")
+    elif branch_name=="main":
+         os.environ['BILLING_PORT']="8084"
+         print(os.environ['BILLING_PORT'])
+         os.system("docker-compose -p BILLING_PROD up")
+         os.environ['WEIGHT_PORT']="8082"
+         print(os.environ['WEIGHT_PORT'])
+         os.system("docker-compose -p WEIGHT_PROD up") 
     print(f"------- worked on branch {branch_name} -------")
     return True
 
 def run_docker(branch_name):
     command_list=[f"git checkout {branch_name}",f"git pull origin {branch_name}","docker-compose down"]
-    if branch_name=="DevOps" or branch_name=="Weight" or branch_name=="Billing":
+    if branch_name=="Weight" or branch_name=="Billing" or branch_name=="DevOps":
         os.chdir(f"/app/GanShmuel/{branch_name}")
+    if branch_name=="Weight" or branch_name=="Billing":
+
+
+        #####tests
+
+
         run_result=create_docker_compose(command_list,branch_name)
         print(run_result)  
         if run_result==True:
@@ -76,3 +87,6 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080,  debug=True , use_reloader=False)
+
+
+
