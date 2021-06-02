@@ -70,7 +70,7 @@ def test_env (branch_name):
     elif branch_name=="main":
         result=200
     print(int(result))
-    return result
+    return int(result)
 
 # Main funcation - run tests 
 def run_docker(branch_name):
