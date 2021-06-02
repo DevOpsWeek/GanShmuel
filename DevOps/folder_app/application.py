@@ -1,6 +1,9 @@
 import json,os,subprocess,smtplib
 from flask import Flask, request
 
+ WEIGHT_STAGING= 8081
+ WEIGHT_PROD=8082
+
 email_dic={"sender":"devweek.ci.mails@gmail.com","rec_billing":["david45453@gmail.com","12345angela54@gmail.com"],\
             "rec_weight":["koren.shoshan@gmail.com","12345angela54@gmail.com"],"rec_devops":"12345angela54@gmail.com","password":"A159753a!"}
 server=smtplib.SMTP('smtp.gmail.com',587)
@@ -23,7 +26,8 @@ def create_docker_compose(command_list,branch_name):
     for i in command_list:
         os.system(i)
     if branch_name=="Weight":
-        os.system("docker-compose --env-file ./.env.stg up")
+        os.environ["WEIGHT_PORT"]=WEIGHT_STAGING
+        os.system("docker-compose up")
     elif branch_name=="Billing":
         os.system("docker-compose --env-file ./.env.stg up")
     elif branch_name=="DevOps":
@@ -48,6 +52,7 @@ def run_docker(branch_name):
         print("DIDNT GET ANY VALID BRANCH NAME ! ------------- ABORT  -----------")
         return "DIDNT GET ANY VALID BRANCH NAME ! ------------- ABORT  -----------"
 
+
 app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -71,6 +76,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080,  debug=True , use_reloader=False)
-
-
-
