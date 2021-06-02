@@ -69,6 +69,7 @@ def test_env (branch_name):
         result=subprocess.check_output(['python3', './test.py'])
     elif branch_name=="main":
         result=200
+    print(result)
     return result
 
 # Main funcation - run tests 
