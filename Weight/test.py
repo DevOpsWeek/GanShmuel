@@ -1,9 +1,6 @@
 import requests
-from flask import jsonify
 from requests.exceptions import HTTPError
 import socket
-
-from sqlalchemy.testing import fixture
 WEIGHT_PATH = ["/","/health", "/unknown", "/getweight", "/health", "/batch-weight", "/getweight", "/weight", "/item/0", "/session/0"]
 
 successes = 0
