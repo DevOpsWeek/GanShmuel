@@ -3,7 +3,6 @@ version: "3.3"
 services:
     db:
       image: mysql:8.0.25
-      container_name: Db_cont
       command: --default-authentication-plugin=mysql_native_password
       restart: always
       volumes:
