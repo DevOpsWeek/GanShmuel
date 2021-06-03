@@ -157,11 +157,13 @@ def getTruck(id):
     if not results:
         return Response(status=404)
     if not t1:
-         for i in str(datetime.datetime(x.year,x.month,1)):
+        t1=""
+        for i in str(datetime.datetime(x.year,x.month,1)):
              if i.isalnum():
                  t1+=i
         
     if not t2:
+        t2=""
         for i in str(x):
             if i.isalnum():
                 t2+=i
