@@ -38,7 +38,7 @@ for i in WEIGHT_PATH:
         #print('\n')
 
      if successes == len(WEIGHT_PATH)-1:
-        print(200)
+        print("200")
         #print("Successfully connected to web service")
 #
 # for i in WEIGHT_PATH:
