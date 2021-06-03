@@ -115,6 +115,8 @@ def run_docker(branch_name):
         test_result=test_env(branch_name)
         print(test_result)
         print(type(test_result))
+        print(int(test_result))
+        print(type(int(test_result)))
         if test_result==200:
             print("--- test was succesfll ! continuing to Prod evn ---")
             create_docker_compose(command_list,branch_name)
