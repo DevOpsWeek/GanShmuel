@@ -56,9 +56,6 @@ def test_env (branch_name):
     if branch_name=="Billing":
         try:
             os.environ['BILLING_PORT']="8085"
-            os.system("git checkout Weight")
-            os.chdir("/app/GanShmuel/Weight")
-            os.system("docker-compose up -d")
             os.system("git checkout Billing")
             os.chdir("/app/GanShmuel/Billing")
             os.system("docker-compose up -d")
@@ -68,8 +65,6 @@ def test_env (branch_name):
             print("result in billing test  ")
             print(result)
             os.system("docker-compose down")
-            os.system("git checkout Weight")
-            os.chdir("/app/GanShmuel/Weight")
             os.system("docker-compose down")            
             return result
         except:
