@@ -47,30 +47,47 @@ def create_docker_compose(command_list,branch_name):
     print(f"------- worked on branch {branch_name} -------")
 
 
+import os
 # Test evn - if succesfull returns 200 (  each branch gets tested with thier provided tests )
 def test_env (branch_name):
-    if(branch_name=="Billing"):
-        os.environ['BILLING_PORT']="8085"
-        os.system("git checkout Weight")
-        os.chdir("/app/GanShmuel/Weight")
-        os.system("docker-compose up -d")
-        os.system("git checkout Billing")
-        os.chdir("/app/GanShmuel/Billing")
-        os.system("docker-compose up -d")
-        os.system("chmod +x test.py")
-        result=subprocess.check_output(['python3', './test.py'])
-        os.system("docker-compose down")
-        return result
+    if branch_name=="Billing":
+        try:
+            os.environ['BILLING_PORT']="8085"
+            os.system("git checkout Weight")
+            os.chdir("/app/GanShmuel/Weight")
+            os.system("docker-compose up -p Weight_test -d")
+            os.system("git checkout Billing")
+            os.chdir("/app/GanShmuel/Billing")
+            os.system("docker-compose up -p Billing_test -d")
+            os.system("chmod +x test.py")
+            result=subprocess.check_output(['python3', './test.py'])
+            os.system("docker-compose down")
+            os.system("git checkout Weight")
+            os.chdir("/app/GanShmuel/Weight")
+            os.system("docker-compose down")            
+            return result
+        except:
+            return "couldnt run your test --- ABORT ---"
     elif branch_name=="Weight":
-        os.environ['WEIGHT_PORT']="8086"
-        os.system("git checkout Weight")
-        os.chdir("/app/GanShmuel/Weight")
-        os.system("docker-compose up -d")
-        os.system("chmod +x test.py")
-        result=subprocess.check_output(['python3', './test.py'])
-        os.system("docker-compose down")
+        try:
+            os.environ['WEIGHT_PORT']="8086"
+            os.system("git checkout Weight")
+            os.chdir("/app/GanShmuel/Weight")
+            os.system("docker-compose up -p Weight_test -d")
+            os.system("chmod +x test.py")
+            result=subprocess.check_output(['python3', './test.py'])
+            os.system("docker-compose down")
+        except:
+            return "couldnt run your test --- ABORT ---"
     elif branch_name=="main":
-        result=200
+        try:
+            if test_env("Weight")==200:
+                if test_env("Billing")==200:
+                    result=200
+            else:
+                return 500
+        except:
+            return "couldnt run your test --- ABORT ---"
     print(int(result))
     os.system("sudo docker network prune")
     return int(result)
