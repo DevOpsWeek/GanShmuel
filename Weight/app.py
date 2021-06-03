@@ -1,10 +1,11 @@
 import os
-from datetime import datetime, date
+from datetime import datetime, date, time
 
 import numpy
 import pandas
 from flask import Flask, jsonify, render_template, request, redirect, Response, url_for
 from flaskext.mysql import MySQL
+
 
 
 app = Flask(__name__)
@@ -187,7 +188,7 @@ def getweight():
         if t1 == '':
             t1 = datetime.combine(date.today(), datetime.min.time())
         if t2 == '':
-            t2 = datetime.now()
+            t2 = datetime.today().replace(day=1)
         if f3 == '':
             f3 = 'in,out,none'
         return redirect((url_for('getweight', t1=t1, t2=t2, f=f3)))
@@ -361,15 +362,17 @@ def get_item(id):
     print(fr)
 
     if not to:
-        cursor.execute("SELECT DATE_FORMAT(NOW(), '%Y-%m-%d-%m-%s')")
-        to = cursor.fetchall()
-        to = str(list(to))
-        to = item_bug(to)
+        # cursor.execute("SELECT DATE_FORMAT(NOW(), '%Y-%m-%d-%h-%m-%s')")
+        # to = cursor.fetchall()
+        # to = str(list(to))
+        # to = item_bug(to)
+        to = datetime.now()
     if not fr:
-        cursor.execute("SELECT DATE_FORMAT(NOW() ,'%Y-%m-01-00-00')")
-        fr = cursor.fetchall()
-        fr = str(list(fr))
-        fr = item_bug(fr)
+        # cursor.execute("SELECT DATE_FORMAT(NOW() ,'%Y-%m-01-00-00')")
+        # fr = cursor.fetchall()
+        # fr = str(list(fr))
+        # fr = item_bug(fr)
+        fr = datetime.today().replace(day=1)
     cursor.execute("SELECT DISTINCT IFNULL(transactions.truckTara, 'na' ), transactions.id, sessions.session_id"
                    " FROM transactions JOIN sessions ON transactions.truck=sessions.truck"
                    " WHERE (transactions.id='{}') AND (sessions.datetime BETWEEN '{}' AND '{}');".format(id, fr, to))
