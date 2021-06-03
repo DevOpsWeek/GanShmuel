@@ -32,18 +32,18 @@ def create_docker_compose(command_list,branch_name):
     if branch_name=="Weight":
          os.environ['WEIGHT_PORT']="8081"
          print(os.environ['WEIGHT_PORT'])
-         os.system("docker-compose -p WEIGHT_Stage up -d")
+         os.system("docker-compose up -d")
     elif branch_name=="Billing":
          os.environ['BILLING_PORT']="8083"
          print(os.environ['BILLING_PORT'])
-         os.system("docker-compose up -p BILLING_Stage -d")
+         os.system("docker-compose up -d")
     elif branch_name=="main":
          os.environ['BILLING_PORT']="8084"
          print(os.environ['BILLING_PORT'])
-         os.system("docker-compose -p BILLING_PROD up -d")
+         os.system("docker-compose up -d")
          os.environ['WEIGHT_PORT']="8082"
          print(os.environ['WEIGHT_PORT'])
-         os.system("docker-compose -p WEIGHT_PROD up -d") 
+         os.system("docker-compose up -d") 
     print(f"------- worked on branch {branch_name} -------")
 
 
