@@ -18,7 +18,3 @@ services:
     depends_on:
       - db
     restart: unless-stopped
-networks:
-  default:
-      external:
-          name: shared-net
