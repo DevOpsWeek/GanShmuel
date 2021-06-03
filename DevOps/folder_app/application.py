@@ -69,7 +69,8 @@ def test_env (branch_name):
             os.system("docker-compose down")            
             return result
         except:
-            return "couldnt run your test --- ABORT ---"
+            print("couldnt run your test --- ABORT ---")
+            return 500
     elif branch_name=="Weight":
         try:
             os.environ['WEIGHT_PORT']="8086"
@@ -82,7 +83,8 @@ def test_env (branch_name):
             result=subprocess.check_output(['python3', './test.py'])
             os.system("docker-compose down")
         except:
-            return "couldnt run your test --- ABORT ---"
+            print("couldnt run your test --- ABORT ---")
+            return 500
     elif branch_name=="main":
         try:
             if test_env("Weight")==200:
@@ -91,10 +93,11 @@ def test_env (branch_name):
             else:
                 return 500
         except:
-            return "couldnt run your test --- ABORT ---"
+            print("couldnt run your test --- ABORT ---")
+            return 500
     print(result)
     os.system("sudo docker network prune")
-    return result
+    return int(result)
 
 # Main funcation - run tests 
 def run_docker(branch_name):
