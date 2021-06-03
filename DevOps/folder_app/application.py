@@ -57,7 +57,7 @@ def test_env (branch_name):
         try:
             os.environ['BILLING_PORT']="8085"
             os.system("git checkout Billing")
-            os.chdir("/app/GanShmuel/Billing")
+            os.chdir("/app/GanShmuel/Billing/app")
             os.system("docker-compose up -d")
             os.system("ls")
             os.system("chmod +x test.py")
