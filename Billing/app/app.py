@@ -223,7 +223,7 @@ def getBill(id):
     session_list=[]
    
     for ID in trucks:
-        getTrucks_list.append(json.loads(getTruck(ID,t1,t2))))
+        getTrucks_list.append(json.loads(getTruck(ID,t1,t2)))
                               
                                
                                                        
