@@ -17,9 +17,9 @@ app = Flask(__name__)
 app.config['TESTING'] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app.config.update(
-    TESTING=True,
-    SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/')
+# app.config.update(
+#     TESTING=True,
+#     SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/')
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
