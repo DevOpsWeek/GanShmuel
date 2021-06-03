@@ -20,6 +20,5 @@ for i in BILLING_PATHS:
           print("500")
           break 
      else:
-          response = requests.get(f"{test}{i}")
           print("200")
           break

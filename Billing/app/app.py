@@ -1,6 +1,6 @@
 import datetime, mysql.connector, os, xlrd, json
 from flask import Flask,request,render_template, redirect ,url_for, send_from_directory,Response,jsonify
-from typing import Sequence
+from typing import BinaryIO, Sequence
 from collections import OrderedDict
 from flask.globals import session
 import socket
@@ -28,7 +28,9 @@ cursor=cnx.cursor()
 hostname = socket.gethostname()
 local_ip = socket.gethostbyname(hostname)
 
+BILLING_PORT=8083
 WEIGHT_PORT=8081
+BILLING_URL=f"{'http://'}{local_ip}{BILLING_PORT}"
 WEIGHT_URL=f"{'http://'}{local_ip}{WEIGHT_PORT}"
 
 @app.route('/',methods=['GET'])
@@ -152,9 +154,9 @@ def addTruck():
 @app.route('/getTruck/<id>?from=<t1>&to=<t2>')
 def getTruck(id,t1,t2):
     x=datetime.datetime.now()
-    if not id:
+    if id is None:
         return "No truck beloning under this provider"
-    cursor.execute('select id from Trucks where id=%s',(id,))
+    cursor.execute('select id from Trucks where id=%s',id)
     results=cursor.fetchall()
     truck=results[0]
     if not results:
@@ -221,7 +223,7 @@ def getBill(id):
     session_list=[]
    
     for ID in trucks:
-        getTrucks_list.append(json.loads(getTruck(ID,t1,t2)))
+        getTrucks_list.append(json.loads(getTruck(ID,t1,t2))))
                               
                                
                                                        
@@ -237,7 +239,7 @@ def getBill(id):
     neto_produce_list=[]
     
     for session in session_list:
-        session_response.append(json.loads(request.get(url=(f'{WEIGHT_URL}/session/{session}'))))
+        session_response.append(json.loads(request.get(url=(f'{WEIGHT_URL}/session/{session}')))
         for data in session_response:
           neto_produce_list.append({"neto":data["neto"],"produce":data["produce"]})
     
