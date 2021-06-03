@@ -42,3 +42,4 @@ for i in WEIGHT_PATH:
         #print("Successfully connected to web service")
 print("200")
 
+
