@@ -1,0 +1,20 @@
+body {
+    margin: 0 auto;
+    background: rgb(118, 168, 185);
+    font-style: italic;
+    }
+    
+    .box { 
+    background-image: url(/img/tr.jpg);
+    text-align: center;
+    display: flex;
+    }
+    
+    .addProvider {
+    margin-bottom: 100px;
+    
+    }
+    
+    input{
+    padding: 100px;
+    } 
