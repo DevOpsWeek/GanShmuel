@@ -9,7 +9,7 @@ weight do not make problems!
 #tes
 plzzzz
 plzzz
-stop i
+stop 
 sleep
 stopp
 #te
