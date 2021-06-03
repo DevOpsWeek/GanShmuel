@@ -73,6 +73,7 @@ def test_env (branch_name):
             os.environ['WEIGHT_PORT']="8086"
             os.system("git checkout Weight")
             os.chdir("/app/GanShmuel/Weight")
+            os.system("ls")
             os.system("docker-compose up -p Weight_test -d")
             os.system("chmod +x test.py")
             result=subprocess.check_output(['python3', './test.py'])
