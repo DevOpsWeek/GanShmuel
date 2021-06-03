@@ -3,6 +3,7 @@ from flask import Flask,request,render_template, redirect ,url_for, send_from_di
 from typing import Sequence
 from collections import OrderedDict
 from flask.globals import session
+import socket
 
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
@@ -24,8 +25,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
 
+hostname = socket.gethostname()
+local_ip = socket.gethostbyname(hostname)
+
 WEIGHT_PORT=8081
-WEIGHT_URL=f'http://0.0.0.0:{WEIGHT_PORT}'
+WEIGHT_URL=f"{'http://'}{local_ip}{WEIGHT_PORT}"
 
 @app.route('/',methods=['GET'])
 def index():
