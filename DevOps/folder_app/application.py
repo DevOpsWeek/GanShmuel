@@ -89,7 +89,7 @@ def test_env (branch_name):
                 return 500
         except:
             return "couldnt run your test --- ABORT ---"
-    print(int(result))
+    print(result)
     os.system("sudo docker network prune")
     return int(result)
 
