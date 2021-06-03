@@ -156,7 +156,7 @@ def getTruck(id,t1,t2):
     x=datetime.datetime.now()
     if id is None:
         return "No truck beloning under this provider"
-    cursor.execute('select id from Trucks where id=%s',id)
+    cursor.execute('select id from Trucks where id=%s',(id,))
     results=cursor.fetchall()
     truck=results[0]
     if not results:
@@ -223,7 +223,7 @@ def getBill(id):
     session_list=[]
    
     for ID in trucks:
-        getTrucks_list.append(json.loads(getTruck(ID,t1,t2)))
+        getTrucks_list.append(json.loads(getTruck(ID[0],t1,t2)))
                               
                                
                                                        
