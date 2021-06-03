@@ -91,7 +91,7 @@ def test_env (branch_name):
             return "couldnt run your test --- ABORT ---"
     print(result)
     os.system("sudo docker network prune")
-    return int(result)
+    return result
 
 # Main funcation - run tests 
 def run_docker(branch_name):
@@ -99,6 +99,7 @@ def run_docker(branch_name):
     if branch_name=="Weight" or branch_name=="Billing" or branch_name=="main":
         os.chdir(f"/app/GanShmuel/{branch_name}")
         test_result=test_env(branch_name)
+        print(test_result)
         if test_result==200:
             create_docker_compose(command_list,branch_name)
             print("exucuted the docker-compose file !!")
