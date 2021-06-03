@@ -99,6 +99,7 @@ def test_env (branch_name):
             return 500
     print(result)
     os.system("sudo docker network prune")
+    os.system("docker volume rm $(docker volume ls -qf dangling=true)")
     try:
         print("trying to return result as a int")                
         return int(result)
