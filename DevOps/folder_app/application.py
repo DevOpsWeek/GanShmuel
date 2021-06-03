@@ -82,6 +82,7 @@ def test_env (branch_name):
             os.system("chmod +x test.py")
             result=subprocess.check_output(['python3', './test.py'])
             os.system("docker-compose down")
+            os.system("git reset --hard")
         except:
             print("couldnt run your test --- ABORT ---")
             return 500
