@@ -66,7 +66,6 @@ def test_env (branch_name):
             print(result)
             os.system("docker-compose down")
             os.system("docker-compose down")            
-            return result
         except:
             print("couldnt run your test --- ABORT ---")
             return 500
