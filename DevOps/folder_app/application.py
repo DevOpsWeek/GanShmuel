@@ -48,6 +48,7 @@ def create_docker_compose(command_list,branch_name):
 
 
 
+
 import os
 # Test evn - if succesfull returns 200 (  each branch gets tested with thier provided tests )
 def test_env (branch_name):
@@ -63,7 +64,7 @@ def test_env (branch_name):
             os.system("docker-compose up -d")
             os.system("ls")
             os.system("chmod +x test.py")
-            result=int(subprocess.check_output(['python3', './test.py']))
+            result=subprocess.check_output(['python3', './test.py'])
             print("result in billing test  ")
             print(result)
             os.system("docker-compose down")
@@ -75,21 +76,22 @@ def test_env (branch_name):
             print("couldnt run your test --- ABORT ---")
             return 500
     elif branch_name=="Weight":
-        os.environ['WEIGHT_PORT']="8086"
-        os.system("git checkout Weight")
-        os.chdir("/app/GanShmuel/Weight")
-        os.system("ls")
-        os.system("docker-compose up -d")
-        os.system("ls")
-        os.system("chmod +x test.py")
-        result=int(subprocess.check_output(['python3', './test.py']))
-        print("result in Weight test  ")
-        print(result)
-        os.system("docker-compose down")
-        os.system("git reset --hard")
-    if result!=200:
-        print("couldnt run your test --- ABORT ---")
-        return 500
+        try:
+            os.environ['WEIGHT_PORT']="8086"
+            os.system("git checkout Weight")
+            os.chdir("/app/GanShmuel/Weight")
+            os.system("ls")
+            os.system("docker-compose up -d")
+            os.system("ls")
+            os.system("chmod +x test.py")
+            result=subprocess.check_output(['python3', './test.py'])
+            print("result in Weight test  ")
+            print(result)
+            os.system("docker-compose down")
+            os.system("git reset --hard")
+        except:
+            print("couldnt run your test --- ABORT ---")
+            return 500
     elif branch_name=="main":
         try:
             if test_env("Weight")==200:
