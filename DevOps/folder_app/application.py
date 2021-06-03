@@ -63,6 +63,8 @@ def test_env (branch_name):
             os.system("ls")
             os.system("chmod +x test.py")
             result=subprocess.check_output(['python3', './test.py'])
+            print("result in billing test  ")
+            print(result)
             os.system("docker-compose down")
             os.system("git checkout Weight")
             os.chdir("/app/GanShmuel/Weight")
@@ -81,6 +83,8 @@ def test_env (branch_name):
             os.system("ls")
             os.system("chmod +x test.py")
             result=subprocess.check_output(['python3', './test.py'])
+            print("result in Weight test  ")
+            print(result)
             os.system("docker-compose down")
             os.system("git reset --hard")
         except:
