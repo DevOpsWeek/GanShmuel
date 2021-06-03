@@ -105,8 +105,10 @@ def test_env (branch_name):
     print(result)
     os.system("sudo docker network prune")
     try:
+        print("trying to return result as a int")                
         return int(result)
     except:
+        print("couldnt..return usual")  
         return result
 
 # Main funcation - run tests 
