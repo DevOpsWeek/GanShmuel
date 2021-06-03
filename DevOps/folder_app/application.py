@@ -41,9 +41,6 @@ def create_docker_compose(command_list,branch_name):
          os.environ['BILLING_PORT']="8084"
          print(os.environ['BILLING_PORT'])
          os.system("docker-compose -p BILLING_PROD up -d")
-         os.system("git checkout Billing")
-         os.chdir("/app/GanShmuel/Billing")
-         os.system("docker-compose up -d")
          os.environ['WEIGHT_PORT']="8082"
          print(os.environ['WEIGHT_PORT'])
          os.system("docker-compose -p WEIGHT_PROD up -d") 
@@ -54,6 +51,9 @@ def create_docker_compose(command_list,branch_name):
 def test_env (branch_name):
     if(branch_name=="Billing"):
         os.environ['BILLING_PORT']="8085"
+        os.system("git checkout Weight")
+        os.chdir("/app/GanShmuel/Weight")
+        os.system("docker-compose up -d")
         os.system("git checkout Billing")
         os.chdir("/app/GanShmuel/Billing")
         os.system("docker-compose up -d")
