@@ -50,6 +50,7 @@ def create_docker_compose(command_list,branch_name):
 import os
 # Test evn - if succesfull returns 200 (  each branch gets tested with thier provided tests )
 def test_env (branch_name):
+    print("--- test env ---")
     if branch_name=="Billing":
         try:
             os.environ['BILLING_PORT']="8085"
@@ -101,6 +102,7 @@ def run_docker(branch_name):
         test_result=test_env(branch_name)
         print(test_result)
         if test_result==200:
+            print("--- test was succesfll ! continuing to Prod evn ---")
             create_docker_compose(command_list,branch_name)
             print("exucuted the docker-compose file !!")
             return "exucuted the docker-compose file !!"
