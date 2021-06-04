@@ -1,10 +1,10 @@
 import datetime, mysql.connector, os, xlrd, json
 from flask import Flask,request,render_template, redirect ,url_for, send_from_directory,Response,jsonify
-from typing import BinaryIO, Sequence
+from typing import Sequence
 from collections import OrderedDict
 from flask.globals import session
-import socket
-
+import requests
+import sys
 UPLOAD_FOLDER = './in/'
 RATES_FILE = 'rates.xlsx'
 ALLOWED_EXTENSIONS = {'xlsx'}
@@ -18,20 +18,14 @@ app = Flask(__name__)
 app.config['TESTING'] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# app.config.update(
-#     TESTING=True,
-#     SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/')
+app.config.update(
+    TESTING=True,
+    SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/')
 
 cnx=mysql.connector.connect(user='root',password='root',host='db',port='3306',database='billdb')
 cursor=cnx.cursor()
-
-hostname = socket.gethostname()
-local_ip = socket.gethostbyname(hostname)
-
-BILLING_PORT=8083
-WEIGHT_PORT=8081
-BILLING_URL=f"{'http://'}{local_ip}{BILLING_PORT}"
-WEIGHT_URL=f"{'http://'}{local_ip}{WEIGHT_PORT}"
+WEIGHT_IP=sys.argv[1]
+WEIGHT_URL=f'http://{WEIGHT_IP}:5000'
 
 @app.route('/',methods=['GET'])
 def index():
@@ -145,7 +139,7 @@ def addTruck():
         cursor.execute('Select id from Providers where provider_name=%s',(prov,))
         results=cursor.fetchall()
    for row in results:
-        values=values+(row[0],)
+        values=values+(row[0],) 
    cursor.execute('INSERT INTO Trucks(id,provider_id) VALUES (%s,%s)',values)
    cnx.commit()
    return redirect(url_for("Trucks"))
@@ -154,7 +148,7 @@ def addTruck():
 @app.route('/getTruck/<id>?from=<t1>&to=<t2>')
 def getTruck(id,t1,t2):
     x=datetime.datetime.now()
-    if id is None:
+    if not id:
         return "No truck beloning under this provider"
     cursor.execute('select id from Trucks where id=%s',(id,))
     results=cursor.fetchall()
@@ -175,14 +169,14 @@ def getTruck(id,t1,t2):
             if i.isalnum():
                 t2+=i
                 
-    url=(f'{WEIGHT_URL}/item/{truck}?from={t1}to&{t2}')
-    get=json.loads(request.get(url=url))
+    url=(f'{WEIGHT_URL}/item/{truck}?from={t1}&to={t2}')
+    get=json.loads(requests.get(url=url))
     return json.dumps(get)
 
     
 
    
-@app.route('/bill/<id>', methods=["GET"])
+@app.route('/bill/<id>' ,methods=["GET"])
 def getBill(id):
     
     x=datetime.datetime.now()
@@ -239,7 +233,7 @@ def getBill(id):
     neto_produce_list=[]
     
     for session in session_list:
-        session_response.append(json.loads(request.get(url=(f'{WEIGHT_URL}/session/{session}')))
+        session_response.append(json.loads(requests.get(url=(f'{WEIGHT_URL}/session/{session}'))))
         for data in session_response:
           neto_produce_list.append({"neto":data["neto"],"produce":data["produce"]})
     
@@ -282,7 +276,7 @@ def getBill(id):
         "SessionCount":sessionCount,
         "products":products,
         "total":total}
-    return json.dumps(bill)
+    return jsonify(bill)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
