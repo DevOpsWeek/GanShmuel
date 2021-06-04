@@ -6,9 +6,8 @@ weight do not make problems!
 #test
 #test
 #test
-#tes
 plzzz
-plzzz
+plz
 stop 
 slee
 stop
@@ -22,14 +21,14 @@ stop
 #test
 #tesq
 #ange
-For An
+For A
 #test
 #tes
 #te
 #tet
 #tes
 #test
-#test
+#tes
 #test
 #test
 #test
