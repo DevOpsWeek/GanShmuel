@@ -1,0 +1,3 @@
+Flask==1.1.4
+pandas==1.2.4
+flask-mysql==1.5.2
