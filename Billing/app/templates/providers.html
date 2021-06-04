@@ -1,0 +1,26 @@
+    <title>Provider Page</title>
+    <div class="box">
+
+        <form action="/addProvider" method="post">
+            <label for="title">Adding Provider</label>
+            <input type="text" name="new_name" placeholder="Provider Name"><br>
+            <button type="submit">Add</button>
+        </form>
+        <form action="/updateProvider" method="post">
+            <label for=title>Update Provider Name</label>
+            <input type="text" name="old_name" placeholder="Provider_old_Name"><br>
+            <input type="text" name="new_name" placeholder="Provider_new_Name"><br>
+            <button type="submit">Update</button>
+        </form>
+        {% for provider in provid_list %} 
+            <h3>{{provider[0]}}</h3>
+            <a href="/getID/{{provider[0]}}">GetID</a><br>
+            <form action="bill/{{provider[1]}}" method='get'>
+                <button type="submit">GetBill</button>
+            </form>
+        {% endfor %}
+        <p>
+            <a href="/">Return to main</a>
+        </p>
+           
+    </div>

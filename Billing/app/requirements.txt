@@ -1,0 +1,4 @@
+Flask
+mysql-connector-python
+requests
+xlrd==1.2.0
