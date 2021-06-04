@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+
+</style>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="static/css/style3.css" type="text/css">
+</head>
+<body>
+
+	   
+	<div class="page">
+		<div class="header">
+			<div>
+				<img width="200" height="200" src="static/images/logo.png" alt="logo"></a>
+						<ul>
+				<li class="selected">
+						<a href="index.html">Home</a>
+					</li>
+					<li>
+						<a href="batch-weight">Batch-Weight</a>
+					</li>
+					<li>
+						<a href="unknown">Unknown</a>
+					</li>
+					<li>
+						<a href="weight">Weight</a>
+					</li>
+					<li>
+						<a href="session">Session</a>
+					</li>
+					<li>
+						<a href="item">Item</a>
+					</li>
+					
+				</ul>
+		
+			</div>
+		</div>
+		<div class="body">
+			<div>
+				<div id="featured">
+				
+				</div>
+			</div>
+			<div>
+				<ul class="blog">
+					<li>
+			<table>
+			<thead>
+			    <tr>
+			        <th>Container ID</th>
+			        <th>Weight</th>
+			        <th>Unit</th>
+			    </tr>
+			    </thead>    
+			    <tbody>
+			     {% for row in data %}    
+			            <tr>
+			                <td>{{row[0]}}</td>
+			                <td>{{row[1]}}</td>
+			                <td>{{row[2]}}</td>
+			            </tr>
+			     {% endfor %}
+			    </tbody>
+			</table>
+					</li>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br><br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					
+				</ul>
+			</div>
+		</div>
+		<div class="footer">
+			<div>
+				<ul>
+				</ul>
+				
+				<div class="connect">	
+					<a href="http://freewebsitetemplates.com/go/youtube/" id="vimeo">YouTube</a>
+					<a href="http://freewebsitetemplates.com/go/facebook/" id="facebook">facebook</a>
+					<a href="http://freewebsitetemplates.com/go/twitter/" id="twitter">twitter</a>
+				</div>
+				
+				
+			</div>
+		</div>
+	</div>
+</body>
+</html>
