@@ -1,74 +1,8 @@
-weight do not make problems!
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-plzzz
-plz
-stop 
-slee
-stop
-#te
-#tes
-#test
-#test
-#test
-#test
-#te
-#test
-#tesq
-#ange
-For A
-#test
-#tes
-#te
-#tet
-#tes
-#test
-#tes
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-#test
-stopp
-stop
-stop
-stop
-stop
-stop
-stop
+Explanation :
 
-stop
-stop
+1. To build the 2 images and running the containers run init-compose.sh PORT(must add port).
+ 
+2. We thought if something goes wrong on cloud we will get a notification on that, because on local its work properly.
 
-
-hi
-hi
-rr
-rr
-test
-test
-test
-tes
-#test
-#test
-stp
-plz
-plz
-pl
-#test
+Thanks for all. :)
+ 
